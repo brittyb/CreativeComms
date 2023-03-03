@@ -1,0 +1,115 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".EditProfileActivity">
+
+  <LinearLayout
+      android:layout_width="match_parent"
+      android:layout_height="match_parent"
+      android:orientation="vertical">
+
+    <de.hdodenhof.circleimageview.CircleImageView
+        android:id="@+id/profileImage"
+        android:layout_width="150dp"
+        android:layout_height="150dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="40dp"
+        tools:src="@tools:sample/avatars"
+        android:layout_centerInParent="true"/>
+
+    <Button
+        android:id="@+id/edit_pic_btn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Edit Picture"
+        android:layout_gravity="center"/>
+
+    <EditText
+        android:id="@+id/et_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="30dp"
+        android:hint="Current Password"
+        android:inputType="textPassword"
+        android:maxLength="16"
+        android:textAlignment="center"
+        android:textColor="#6bfff7"
+        android:textColorHint="@color/white" />
+
+    <EditText
+        android:id="@+id/et_new_password"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="New Password"
+        android:inputType="textPassword"
+        android:textAlignment="center"
+        android:textColor="#6bfff7"
+        android:textColorHint="@color/white"
+        android:layout_marginBottom="30dp"
+        android:maxLength="16"/>
+
+
+
+    <EditText
+        android:id="@+id/et_new_password2"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="Repeat New Password"
+        android:inputType="textPassword"
+        android:textAlignment="center"
+        android:textColor="#6bfff7"
+        android:textColorHint="@color/white"
+        android:layout_marginBottom="30dp"
+        android:maxLength="16"/>
+
+    <EditText
+        android:id="@+id/et_new_username"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:hint="New Username"
+        android:inputType="text"
+        android:textAlignment="center"
+        android:textColor="#6bfff7"
+        android:textColorHint="@color/white"
+        android:digits="0123456789,qwertzuiopasdfghjklyxcvbnm_"
+        android:maxLength="16"/>
+
+    <TextView
+        android:id="@+id/errorText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:textSize="20sp" />
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal">
+
+      <Button
+          android:id="@+id/edit_password_btn"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="Change Password" />
+
+      <Button
+          android:id="@+id/edit_user_btn"
+          android:layout_width="wrap_content"
+          android:layout_height="wrap_content"
+          android:layout_weight="1"
+          android:text="Change Username" />
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/save_changes_button"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="Save Changes" />
+
+  </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

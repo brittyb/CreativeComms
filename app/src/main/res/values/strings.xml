@@ -1,0 +1,22 @@
+<resources>
+    <string name="app_name">CreativeComms</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <string name="btn">Button</string>
+    <string name="message">Hello Geeks!! This is a Button.</string>
+    <string name="accountName">Username</string>
+
+    <string name="selected_item">Selected item:</string>
+
+    <string-array name="EstimatedTimeOptions">
+        <item>Varies</item>
+        <item>Same Day</item>
+        <item>1–2 days</item>
+        <item>3–4 days</item>
+        <item>5–6 days</item>
+        <item>1 week</item>
+        <item>2 weeks</item>
+        <item>3 weeks</item>
+        <item>1 month+</item>
+    </string-array>
+</resources>
