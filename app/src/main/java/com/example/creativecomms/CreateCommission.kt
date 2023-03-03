@@ -21,28 +21,31 @@ import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
 import com.google.firebase.storage.FirebaseStorage
 import de.hdodenhof.circleimageview.CircleImageView
+import java.util.*
 
 class CreateCommission : AppCompatActivity() {
+    //pick image variables
     private val pickImage = 100
     private var imageUri: Uri? = null
     private var imageUriText : String? = ""
     private lateinit var commPic : ImageView
 
-    val uid = FirebaseAuth.getInstance().uid ?: ""
+    //user's id
+    private val uid = FirebaseAuth.getInstance().uid ?: ""
 
-    var commission : Commission? = null
+    //commission variable and user
+    lateinit var commission : Commission
     lateinit var user : User
     var selectedET : String = "Varies"
 
+    //UI elements
     private lateinit var profilePic : CircleImageView
     private lateinit var username : TextView
     private lateinit var rating : RatingBar
-    private lateinit var min : EditText
-    private lateinit var max : EditText
 
+    //int variable for number of current commissions
 
-
-
+    private var numComms : Int = 0
 
 
 
@@ -88,6 +91,20 @@ class CreateCommission : AppCompatActivity() {
         database.addListenerForSingleValueEvent(userListener)
 
 
+        //listener for number of comms in firebase
+        val database2 = FirebaseDatabase.getInstance().getReference("/Commissions/$uid")
+        val commListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // Get Number of Commissions from firebase
+                numComms = dataSnapshot.childrenCount.toInt()
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // handle error
+            }
+        }
+        database2.addListenerForSingleValueEvent(commListener)
+
+        //Dropdown menu
         val dropdownItems = resources.getStringArray(R.array.EstimatedTimeOptions)
         val spinner = findViewById<Spinner>(R.id.spinner)
 
@@ -111,6 +128,7 @@ class CreateCommission : AppCompatActivity() {
         }
 
 
+        //get inputs
         val title = findViewById<EditText>(R.id.editTitle)
         val description = findViewById<EditText>(R.id.editDesc)
         val min = findViewById<EditText>(R.id.minPriceText)
@@ -124,14 +142,10 @@ class CreateCommission : AppCompatActivity() {
 
         val titleText = title.text
         val descriptionText = description.text
-        val minText : Double? = min?.text.toString().toDoubleOrNull()
-        val maxText : Double? = max?.text.toString().toDoubleOrNull()
+
         val mediumText = medium.text
         val tag1Text = tag1.text
         val tag2Text = tag2.text
-
-
-        Log.d("CreateComms", minText.toString())
 
         val saveButton = findViewById<Button>(R.id.saveComm_btn)
         val imageButton = findViewById<Button>(R.id.btn_addImage)
@@ -141,12 +155,9 @@ class CreateCommission : AppCompatActivity() {
 
         saveButton.setOnClickListener{
 
-            if(validateFields(titleText, descriptionText, mediumText, tag1Text, tag2Text,
-                    imageUri, errorMessage, minText, maxText)){
-                //createCommission(titleText.toString(), descriptionText.toString(), 0.0, 0.0, "")
-                //val intent = Intent(this, HomeActivity::class.java)
-                //startActivity(intent)
-            }
+            //validate entered fields when save button is clicked
+            validateFields(titleText, descriptionText, mediumText, tag1Text, tag2Text,
+                    imageUri, errorMessage, min.text, max.text)
         }
 
         imageButton.setOnClickListener{
@@ -224,6 +235,7 @@ class CreateCommission : AppCompatActivity() {
     }
 
 
+    //Open gallery
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == pickImage) {
@@ -232,9 +244,10 @@ class CreateCommission : AppCompatActivity() {
         }
     }
 
+    //validate that all necessary fields have been filled out
     private fun validateFields(titleText : Editable, descriptionText : Editable, mediumText : Editable,
                                tag1Text : Editable, tag2Text : Editable, imageUri : Uri?,
-                               errorMessage : TextView, min: Double?, max: Double?) : Boolean{
+                               errorMessage : TextView, min: Editable, max: Editable) : Boolean{
         if(titleText.isEmpty()){
             errorMessage.text = "Enter a Title"
             return false
@@ -260,33 +273,59 @@ class CreateCommission : AppCompatActivity() {
             errorMessage.text = "Must upload an image"
             return false
         }
-        if(min == null){
-            errorMessage.text = "Enter a minimum price value"
+
+        Log.d("CreateComms", min.toString())
+
+
+        if(min.toString().isEmpty() || max.toString().isEmpty()){
+            errorMessage.text = "Enter a minimum and maximum price value"
             return false
+        }else{
+            if(min.toString().toDouble() == 0.00 || max.toString().toDouble() == 0.00){
+                errorMessage.text = "Minimum and maximum values cannot be 0.0"
+                return false
+            }
+
+            if(min.toString().toDouble() >= max.toString().toDouble()){
+                errorMessage.text = "Maximum value cannot be lower or equal to minimum value"
+                return false
+            }
         }
 
-        if(max == null){
-            errorMessage.text = "Enter a maximum price value"
-            return false
-        }
-
-        if(min == 0.00 || max == 0.00){
-            errorMessage.text = "Minimum and maximum values cannot be 0.0"
-            return false
-        }
-
-        if(min > max){
-            errorMessage.text = "Maximum value cannot be lower than minimum value"
-            return false
-        }
-
+        createCommission(titleText.toString(), descriptionText.toString(), min.toString().toDouble(), max.toString().toDouble(), imageUri.toString(),
+        tag1Text.toString(), tag2Text.toString(), imageUri.toString(), uid, selectedET)
         return true
     }
 
 
-    private fun createCommission(title:String, description:String, min:Double, max:Double, image:String){
-        val ref = FirebaseDatabase.getInstance().getReference("/Commissions/$uid/one")
-        //commission = Commission(title, description, min, max, "", image)
-        //ref.setValue(commission)
+    private fun createCommission(title:String, description:String, min:Double, max:Double, image:String, tag1:String, tag2:String, uri:String,
+    uid:String, time:String){
+        //val
+        numComms += 1
+        val ref = FirebaseDatabase.getInstance().getReference("/Commissions/$uid/$numComms")
+        commission = Commission(title, description, min, max, tag1, tag2,uri,uid,time)
+        ref.setValue(commission)
+        uploadImageToFirebaseStorage()
+    }
+
+    private fun uploadImageToFirebaseStorage() {
+        if(imageUri == null) return
+        val filename = UUID.randomUUID().toString()
+        val ref = FirebaseStorage.getInstance().getReference("CommissionPics/$filename")
+        ref.putFile(imageUri!!)
+            .addOnSuccessListener {
+                Log.d("EditProfileActivity", "Successfully uploaded pfp image: ${it.metadata?.path}")
+                ref.downloadUrl.addOnSuccessListener {
+                    Log.d("EditProfileActivity", "${it.toString()}")
+                    savePictureToFirebase(it.toString())
+                }
+            }
+    }
+
+
+    private fun savePictureToFirebase(uri : String) {
+        val uid = FirebaseAuth.getInstance().uid ?: ""
+        val ref = FirebaseDatabase.getInstance().getReference("Commissions/$uid/$numComms/imageUri")
+        ref.setValue(uri).addOnSuccessListener { Log.d("CreateComm", "Successfully set value") }
     }
 }

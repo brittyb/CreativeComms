@@ -44,8 +44,10 @@ class AccountFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    val uid = FirebaseAuth.getInstance().uid ?: ""
+    private val uid = FirebaseAuth.getInstance().uid ?: ""
     lateinit var user : User
+    private var numComms : Int = 0
+    private var data = ArrayList<ItemsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -78,10 +80,11 @@ class AccountFragment : Fragment() {
         val logoutButton : Button = view.findViewById(R.id.btn_logout)
 
 
-
         val database = FirebaseDatabase.getInstance().getReference("/users/$uid")
         Log.d("DatabaseLog", uid)
 
+
+        //Get current user and display username and rating
         val userListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Get Post object and use the values to update the UI
@@ -122,7 +125,6 @@ class AccountFragment : Fragment() {
         }
 
 
-        //profilePic.setImageResource(R.drawable.defaultprofile)
 
         editButton.setOnClickListener {
             val intent = Intent(activity, EditProfileActivity::class.java)
@@ -140,34 +142,38 @@ class AccountFragment : Fragment() {
 
         // this creates a vertical layout Manager
         recyclerview.layoutManager = LinearLayoutManager(this.activity)
-    //TODO:Sync with database
+
+
         // ArrayList of class ItemsViewModel
-        val data = ArrayList<ItemsViewModel>()
+        //val data = ArrayList<ItemsViewModel>()
 
-        // This loop will create 20 Views containing
-        // the image with the count of view
-        /*
 
-        if(account.commArray.size > 0){
-            for (i in 0..(account.commArray.size - 1)) {
-                data.add(ItemsViewModel(R.mipmap.default_pfp_foreground, account.commArray.get(i).title.toString(), account.commArray))
+//listener for number of comms in firebase
+        val commsDatabase = FirebaseDatabase.getInstance().getReference("/Commissions/$uid")
+        val commListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                // Get Number of Commissions from firebase
 
+                dataSnapshot.children.forEach{
+                    val comm = it.getValue(Commission::class.java)
+                    data.add(ItemsViewModel(comm?.imageUri.toString(), comm?.title.toString()))
+                    val title = comm?.title
+                    Log.d("AccountFragLog", "added child to data")
+                    Log.d("AccountFragLog", "$title")
+                }
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // handle error
             }
         }
-*/
+        commsDatabase.addListenerForSingleValueEvent(commListener)
 
-
-        // This will pass the ArrayList to our Adapter
+        // This will pass the ArrayList to Adapter
         val adapter = CustomAdapter(data)
 
         // Setting the Adapter with the recyclerview
         recyclerview.adapter = adapter
 
-        /*
-        if(account.commArray.size > 0){
-            account.commArray = adapter.getMutableList(0)
-        }
-        */
 
 
     }

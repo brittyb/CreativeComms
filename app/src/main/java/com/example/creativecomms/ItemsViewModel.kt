@@ -1,4 +1,4 @@
 package com.example.creativecomms
 
-class ItemsViewModel(val image: Int, val text: String, val comms: MutableList<Commission>) {
+class ItemsViewModel(val image: String, val text: String) {
 }

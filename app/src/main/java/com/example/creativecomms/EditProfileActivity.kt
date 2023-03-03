@@ -123,19 +123,19 @@ class EditProfileActivity : AppCompatActivity() {
                     }
                 }
 */
-                changePfpBtn.setOnClickListener {
-                    Log.d("ProfilePictureActivity", "Pfp button clicked")
-                    val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
-                    startActivityForResult(gallery, pickImage)
-                }
+        changePfpBtn.setOnClickListener {
+            Log.d("ProfilePictureActivity", "Pfp button clicked")
+            val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
+            startActivityForResult(gallery, pickImage)
+        }
 
-                saveChangesBtn.setOnClickListener {
-                    //account.username = newCorrectUser
-                    //account.password = newCorrectPass
-                    uploadImageToFirebaseStorage()
-                    val intent = Intent(this, HomeActivity::class.java)
-                    startActivity(intent)
-                }
+        saveChangesBtn.setOnClickListener {
+            //account.username = newCorrectUser
+            //account.password = newCorrectPass
+            uploadImageToFirebaseStorage()
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
+        }
 
         }
 
@@ -160,7 +160,6 @@ class EditProfileActivity : AppCompatActivity() {
                     savePictureToFirebase(it.toString())
                 }
             }
-
     }
 
 

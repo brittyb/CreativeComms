@@ -1,4 +1,5 @@
 package com.example.creativecomms
+import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -28,14 +29,17 @@ class CustomAdapter(private val mList: MutableList<ItemsViewModel>) : RecyclerVi
         val button_ed = holder.itemView.findViewById<Button>(R.id.edit_button)
 
         // sets the image to the imageview from our itemHolder class
-        holder.imageView.setImageResource(ItemsViewModel.image)
+        holder.imageView.setImageURI(Uri.parse(ItemsViewModel.image))
 
         // sets the text to the textview from our itemHolder class
         holder.textView.text = ItemsViewModel.text
 
+        /*
         button_del.setOnClickListener{
             removeItem(position)
         }
+
+         */
     }
 
     // return the number of the items in the list
@@ -44,14 +48,15 @@ class CustomAdapter(private val mList: MutableList<ItemsViewModel>) : RecyclerVi
     }
 
     private fun removeItem(position: Int){
-        mList[0].comms.removeAt(position)
+        //mList[0].comms.removeAt(position)
         mList.removeAt(position)
         notifyDataSetChanged()
     }
 
-    public fun getMutableList(position : Int) : MutableList<Commission>{
-        return mList[0].comms
+    /*public fun getMutableList(position : Int) : MutableList<Commission>{
+        //return mList[0].comms
     }
+    */
 
     // Holds the views for adding it to image and text
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
