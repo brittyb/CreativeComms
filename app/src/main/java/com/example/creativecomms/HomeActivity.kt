@@ -19,10 +19,12 @@ class HomeActivity : AppCompatActivity() {
         val fragment4: Fragment = AccountFragment()
         val fragment5: Fragment = SearchFragment()
 
-        val account = intent.getSerializableExtra("myAccount") as Account?
+        /*val account = intent.getSerializableExtra("myAccount") as Account?
         val mBundle = Bundle()
         mBundle.putSerializable("Account", account)
         fragment4.arguments = mBundle
+
+         */
         val fragmentManager: FragmentManager = supportFragmentManager
 
         val bottomNavigationView: BottomNavigationView = findViewById(R.id.navigation)
@@ -42,8 +44,25 @@ class HomeActivity : AppCompatActivity() {
 
         }
 
-        // Set default selection
-        bottomNavigationView.selectedItemId = R.id.page_1
+        val extras = intent
+        if(extras!= null){
+            val isSearch = extras.getBooleanExtra("search", false)
+            if(isSearch == true){
+                val isEmpty = extras.getBooleanExtra("empty", true)
+                val filters = extras.getSerializableExtra("filters")
+                val mBundle = Bundle()
+                mBundle.putSerializable("filters", filters)
+                mBundle.putBoolean("isEmpty", isEmpty)
+                fragment5.arguments = mBundle
+                bottomNavigationView.selectedItemId = R.id.page_5
+            }else{
+                bottomNavigationView.selectedItemId = R.id.page_1
+            }
+        }else{
+            // Set default selection
+            bottomNavigationView.selectedItemId = R.id.page_1
+        }
+
     }
 
 }

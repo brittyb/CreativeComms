@@ -12,28 +12,16 @@
         android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <SearchView
-            android:id="@+id/idSV"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="8dp"
-            android:iconifiedByDefault="false"
-            android:padding="4dp"
-            android:queryHint="Search for key words" />
-
         <Button
-            android:id="@+id/button2"
+            android:id="@+id/editFiltersButton"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:text="Edit Filters" />
+            android:text="Edit Filters And Search" />
 
-        <GridView
-            android:id="@+id/gridview"
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/my_recycler_view"
             android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:horizontalSpacing="6dp"
-            android:numColumns="2"
-            android:verticalSpacing="6dp" />
+            android:layout_height="match_parent" />
 
 
     </LinearLayout>

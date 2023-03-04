@@ -1,4 +1,4 @@
 package com.example.creativecomms
 
-class ItemsViewModel(val image: String, val text: String) {
+class ItemsViewModel(var image: String, var text: String) {
 }

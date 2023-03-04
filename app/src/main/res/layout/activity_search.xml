@@ -1,0 +1,88 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".SearchActivity">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/headingText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Search Settings"
+            android:textSize="20sp" />
+
+        <EditText
+            android:id="@+id/usernameSearchText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Search by username"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/ratingSearchText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Minumum user rating"
+            android:inputType="number" />
+
+        <EditText
+            android:id="@+id/searchTitleText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Search by title"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/minPriceSearchText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Minimum Price"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/maxPriceSearchText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Maximum Price"
+            android:inputType="numberDecimal" />
+
+        <EditText
+            android:id="@+id/mediumSearchText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Art Medium"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/tagSearchText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Search by tag"
+            android:inputType="textPersonName" />
+
+        <TextView
+            android:id="@+id/errorMessageText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
+
+        <Button
+            android:id="@+id/searchButton"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:text="Search" />
+    </LinearLayout>
+</androidx.constraintlayout.widget.ConstraintLayout>

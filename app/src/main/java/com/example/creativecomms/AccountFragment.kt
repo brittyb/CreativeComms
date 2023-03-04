@@ -47,6 +47,7 @@ class AccountFragment : Fragment() {
     private val uid = FirebaseAuth.getInstance().uid ?: ""
     lateinit var user : User
     private var numComms : Int = 0
+    private lateinit var recyclerView : RecyclerView
     private var data = ArrayList<ItemsViewModel>()
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -106,7 +107,6 @@ class AccountFragment : Fragment() {
                         Log.d("DatabaseLog", "Did not get bytes")
                     }
 
-                //profilePic.setImageBitmap(bitmap)
                 rating.rating = user.rating!!
             }
             override fun onCancelled(databaseError: DatabaseError) {
@@ -138,10 +138,10 @@ class AccountFragment : Fragment() {
 
 
         // getting the recyclerview by its id
-        val recyclerview = view.findViewById<RecyclerView>(R.id.my_recycler_view)
+        recyclerView = view.findViewById<RecyclerView>(R.id.my_recycler_view)
 
         // this creates a vertical layout Manager
-        recyclerview.layoutManager = LinearLayoutManager(this.activity)
+        recyclerView.layoutManager = LinearLayoutManager(this.activity)
 
 
         // ArrayList of class ItemsViewModel
@@ -153,26 +153,21 @@ class AccountFragment : Fragment() {
         val commListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
                 // Get Number of Commissions from firebase
-
-                dataSnapshot.children.forEach{
-                    val comm = it.getValue(Commission::class.java)
-                    data.add(ItemsViewModel(comm?.imageUri.toString(), comm?.title.toString()))
-                    val title = comm?.title
-                    Log.d("AccountFragLog", "added child to data")
-                    Log.d("AccountFragLog", "$title")
+            data.clear()
+                if(dataSnapshot.exists()){
+                    for(userSnapshot in dataSnapshot.children){
+                        val comm = userSnapshot.getValue(Commission::class.java)
+                        data.add(ItemsViewModel(comm?.imageUri.toString(), comm?.title.toString()))
+                    }
+                    recyclerView.adapter = CustomAdapter(data)
                 }
+
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 // handle error
             }
         }
         commsDatabase.addListenerForSingleValueEvent(commListener)
-
-        // This will pass the ArrayList to Adapter
-        val adapter = CustomAdapter(data)
-
-        // Setting the Adapter with the recyclerview
-        recyclerview.adapter = adapter
 
 
 

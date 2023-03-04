@@ -286,7 +286,7 @@ class CreateCommission : AppCompatActivity() {
                 return false
             }
 
-            if(min.toString().toDouble() >= max.toString().toDouble()){
+            if(min.toString().toDouble() > max.toString().toDouble()){
                 errorMessage.text = "Maximum value cannot be lower or equal to minimum value"
                 return false
             }
@@ -306,6 +306,10 @@ class CreateCommission : AppCompatActivity() {
         commission = Commission(title, description, min, max, tag1, tag2,uri,uid,time)
         ref.setValue(commission)
         uploadImageToFirebaseStorage()
+
+        val ref2 = FirebaseDatabase.getInstance().getReference("/SearchCommissions").push()
+        commission = Commission(title, description, min, max, tag1, tag2,uri,uid,time)
+        ref2.setValue(commission)
     }
 
     private fun uploadImageToFirebaseStorage() {
