@@ -1,4 +1,4 @@
 package com.example.creativecomms
 
-class ItemsViewModel(var image: String, var text: String) {
+class ItemsViewModel(var image: String, var text: String, var comm : Commission) {
 }

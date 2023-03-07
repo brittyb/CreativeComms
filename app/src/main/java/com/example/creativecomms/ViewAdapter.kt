@@ -1,5 +1,6 @@
 package com.example.creativecomms
 import android.content.ClipData.Item
+import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -36,6 +37,12 @@ class ViewAdapter(private val mList: MutableList<ItemsViewModel>) : RecyclerView
         // sets the text to the textview from our itemHolder class
         holder.textView.text = ItemsViewModel.text
 
+
+        button_view.setOnClickListener(){
+            val intent = Intent(holder.itemView.context, ViewCommissionActivity::class.java)
+            intent.putExtra("Commission", ItemsViewModel.comm)
+            holder.itemView.context.startActivity(intent)
+        }
     }
 
     // return the number of the items in the list

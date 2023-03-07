@@ -157,7 +157,9 @@ class AccountFragment : Fragment() {
                 if(dataSnapshot.exists()){
                     for(userSnapshot in dataSnapshot.children){
                         val comm = userSnapshot.getValue(Commission::class.java)
-                        data.add(ItemsViewModel(comm?.imageUri.toString(), comm?.title.toString()))
+                        data.add(ItemsViewModel(comm?.imageUri.toString(), comm?.title.toString(),
+                            comm!!
+                        ))
                     }
                     recyclerView.adapter = CustomAdapter(data)
                 }

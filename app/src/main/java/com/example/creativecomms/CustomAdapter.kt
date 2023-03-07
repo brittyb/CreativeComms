@@ -1,4 +1,5 @@
 package com.example.creativecomms
+import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
@@ -28,6 +29,7 @@ class CustomAdapter(private val mList: MutableList<ItemsViewModel>) : RecyclerVi
         val ItemsViewModel = mList[position]
         val button_del = holder.itemView.findViewById<Button>(R.id.delete_button)
         val button_ed = holder.itemView.findViewById<Button>(R.id.edit_button)
+        val button_view = holder.itemView.findViewById<Button>(R.id.view_button)
 
         // sets the image to the imageview from our itemHolder class
         val uri = ItemsViewModel.image
@@ -35,6 +37,12 @@ class CustomAdapter(private val mList: MutableList<ItemsViewModel>) : RecyclerVi
 
         // sets the text to the textview from our itemHolder class
         holder.textView.text = ItemsViewModel.text
+
+        button_view.setOnClickListener(){
+            val intent = Intent(holder.itemView.context, ViewCommissionActivity::class.java)
+            intent.putExtra("Commission", ItemsViewModel.comm)
+            holder.itemView.context.startActivity(intent)
+        }
 
         /*
         button_del.setOnClickListener{

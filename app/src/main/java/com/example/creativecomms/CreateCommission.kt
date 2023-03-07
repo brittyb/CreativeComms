@@ -292,24 +292,26 @@ class CreateCommission : AppCompatActivity() {
             }
         }
 
-        createCommission(titleText.toString(), descriptionText.toString(), min.toString().toDouble(), max.toString().toDouble(), imageUri.toString(),
-        tag1Text.toString(), tag2Text.toString(), imageUri.toString(), uid, selectedET)
+        createCommission(titleText.toString(), descriptionText.toString(), min.toString().toDouble(), max.toString().toDouble(),
+        mediumText.toString(), tag1Text.toString(), tag2Text.toString(), imageUri.toString(), uid, selectedET)
         return true
     }
 
 
-    private fun createCommission(title:String, description:String, min:Double, max:Double, image:String, tag1:String, tag2:String, uri:String,
+    private fun createCommission(title:String, description:String, min:Double, max:Double, medium:String, tag1:String, tag2:String, uri:String,
     uid:String, time:String){
         //val
         numComms += 1
         val ref = FirebaseDatabase.getInstance().getReference("/Commissions/$uid/$numComms")
-        commission = Commission(title, description, min, max, tag1, tag2,uri,uid,time)
+        commission = Commission(title, description, min, max, medium, tag1, tag2,uri,uid,time, "")
         ref.setValue(commission)
+        val ref2 = FirebaseDatabase.getInstance().getReference("/Commissions/$uid/$numComms/commID")
+        val id = ref2.push().key
+        ref2.setValue(id)
+
         uploadImageToFirebaseStorage()
 
-        val ref2 = FirebaseDatabase.getInstance().getReference("/SearchCommissions").push()
-        commission = Commission(title, description, min, max, tag1, tag2,uri,uid,time)
-        ref2.setValue(commission)
+
     }
 
     private fun uploadImageToFirebaseStorage() {
