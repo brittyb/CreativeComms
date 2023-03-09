@@ -47,7 +47,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Minimum Price"
+            android:hint="Minimum price"
             android:inputType="numberDecimal" />
 
         <EditText
@@ -55,7 +55,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:ems="10"
-            android:hint="Maximum Price"
+            android:hint="Maximum price"
             android:inputType="numberDecimal" />
 
         <EditText
@@ -72,6 +72,14 @@
             android:layout_height="wrap_content"
             android:ems="10"
             android:hint="Search by tag"
+            android:inputType="textPersonName" />
+
+        <EditText
+            android:id="@+id/daysSearchText"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:ems="10"
+            android:hint="Completion time (in days)"
             android:inputType="textPersonName" />
 
         <TextView

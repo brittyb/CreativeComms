@@ -109,7 +109,6 @@ class SearchFragment : Fragment() {
                                             val childUsername = snapshot.child("username").value.toString()
                                         //check if username matches filter
                                             if(childUsername == filters?.username){
-                                                //data.add(ItemsViewModel(childrenList[i].imageUri.toString(), childrenList[i].title.toString()))
                                             }else{
                                                 //remove irrelevant results from list
                                                 childrenList.removeAt(i)

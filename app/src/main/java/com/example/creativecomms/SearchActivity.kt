@@ -20,13 +20,16 @@ class SearchActivity : AppCompatActivity() {
         searchButton=findViewById(R.id.searchButton)
 
         val username : EditText = findViewById(R.id.usernameSearchText)
-        val rating : Float = 0.0f
+        val rating = 0.0f
         val title : EditText = findViewById(R.id.searchTitleText)
         val min : EditText = findViewById(R.id.minPriceSearchText)
+        min.addDecimalLimiter()
         val max : EditText = findViewById(R.id.maxPriceSearchText)
+        max.addDecimalLimiter()
         val medium : EditText = findViewById(R.id.mediumSearchText)
         val tag : EditText = findViewById(R.id.tagSearchText)
         val error : TextView = findViewById(R.id.errorMessageText)
+        val days : EditText = findViewById(R.id.daysSearchText)
 
         val userText = username.text
         val titleText = title.text
@@ -34,11 +37,12 @@ class SearchActivity : AppCompatActivity() {
         val maxText = max.text
         val medText = medium.text
         val tagText = tag.text
+        val daysText = days.text
 
 
         //validate fields when search button is clicked
         searchButton.setOnClickListener{
-            validateFields(userText, rating, titleText, minText, maxText, medText, tagText, error)
+            validateFields(userText, rating, titleText, minText, maxText, medText, tagText, error, daysText)
         }
     }
 
@@ -52,8 +56,9 @@ class SearchActivity : AppCompatActivity() {
         var max:Double = 0.0
         var medium:String = ""
         var tag:String=""
+        var days:Int=0
 
-        constructor(username:String, rating:Float, title:String, min:Double, max:Double, medium:String, tag:String){
+        constructor(username:String, rating:Float, title:String, min:Double, max:Double, medium:String, tag:String, days:Int){
             this.username=username
             this.rating=rating
             this.title=title
@@ -61,13 +66,14 @@ class SearchActivity : AppCompatActivity() {
             this.max = max
             this.medium = medium
             this.tag = tag
+            this.days = days
         }
     }
 
 
 
     private fun validateFields(userText:Editable, rating: Float, titleText:Editable, minText:Editable, maxText:Editable,
-                               mediumText:Editable, tagText:Editable, errorText:TextView) : Boolean{
+                               mediumText:Editable, tagText:Editable, errorText:TextView, daysText:Editable) : Boolean{
         //convert editables to strings
         var user = userText.toString()
         val rating = rating
@@ -76,10 +82,11 @@ class SearchActivity : AppCompatActivity() {
         var max = maxText.toString()
         var medium = mediumText.toString()
         var tag = tagText.toString()
+        var days = daysText.toString()
 
         //check if there are search fields
         if(user.isEmpty() && title.isEmpty() && minText.isEmpty() && maxText.isEmpty() &&
-                mediumText.isEmpty() && tagText.isEmpty()){
+                mediumText.isEmpty() && tagText.isEmpty() && daysText.isEmpty()){
             val intent = Intent(this, HomeActivity::class.java)
             intent.putExtra("search", true)
             //indicate that the fields are empty
@@ -120,14 +127,17 @@ class SearchActivity : AppCompatActivity() {
         if(tag.isEmpty()){
             tag = ""
         }
+        if(days.isEmpty()){
+            days = "0"
+        }
     //call create search filters function
-        createSearchFilters(user, rating, title, min.toDouble(), max.toDouble(), medium, tag)
+        createSearchFilters(user, rating, title, min.toDouble(), max.toDouble(), medium, tag, days.toInt())
         return true
     }
 
     //create filters and put in intent to go back to results page
     private fun createSearchFilters(user : String, rating: Float, title : String, min : Double, max : Double,
-                                    medium: String, tag:String){
+                                    medium: String, tag:String, days:Int){
         //go to home activity
         val intent = Intent(this, HomeActivity::class.java)
         //indicate that the fields are not empty
@@ -135,7 +145,7 @@ class SearchActivity : AppCompatActivity() {
         //indicate that the home page should go to the search results fragment
         intent.putExtra("search", true)
         //pass filters class to home activity
-        intent.putExtra("filters",SearchFilters(user, rating,title,min,max,medium,tag))
+        intent.putExtra("filters",SearchFilters(user, rating,title,min,max,medium,tag, days))
         startActivity(intent)
     }
 

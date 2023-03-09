@@ -5,6 +5,7 @@ import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
+import android.widget.Button
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
@@ -33,6 +34,8 @@ class ViewCommissionActivity : AppCompatActivity() {
         val time = findViewById<TextView>(R.id.timeText)
         val min = findViewById<TextView>(R.id.minPriceText)
         val max = findViewById<TextView>(R.id.maxPriceText)
+
+        val requestButton = findViewById<Button>(R.id.requestButton)
         //double check to see if the commission exists before displaying
         if(intent.getSerializableExtra("Commission") != null){
             //get commission from intent
@@ -81,13 +84,20 @@ class ViewCommissionActivity : AppCompatActivity() {
 
             medium.text = "Medium: ${commission.medium}"
 
-            time.text = "Estimated Completion Time:${commission.selectedET}"
+            time.text = "Estimated Completion Time: ${commission.selectedET}"
 
             min.text = "Minimum Price: ${commission.minPrice}"
 
             max.text = "Maximum Price: ${commission.maxPrice}"
 
 
+            requestButton.setOnClickListener{
+                val intent = Intent(this, RequestActivity::class.java)
+                intent.putExtra("Title", commission.title)
+                intent.putExtra("commUID", commission.uid)
+                intent.putExtra("ID", commission.commID)
+                startActivity(intent)
+            }
 
         }else{
             //Go to another page

@@ -36,7 +36,7 @@ class CreateCommission : AppCompatActivity() {
     //commission variable and user
     lateinit var commission : Commission
     lateinit var user : User
-    var selectedET : String = "Varies"
+    //var selectedET : String = "Varies"
 
     //UI elements
     private lateinit var profilePic : CircleImageView
@@ -104,6 +104,7 @@ class CreateCommission : AppCompatActivity() {
         }
         database2.addListenerForSingleValueEvent(commListener)
 
+        /*
         //Dropdown menu
         val dropdownItems = resources.getStringArray(R.array.EstimatedTimeOptions)
         val spinner = findViewById<Spinner>(R.id.spinner)
@@ -127,7 +128,7 @@ class CreateCommission : AppCompatActivity() {
             }
         }
 
-
+*/
         //get inputs
         val title = findViewById<EditText>(R.id.editTitle)
         val description = findViewById<EditText>(R.id.editDesc)
@@ -139,6 +140,7 @@ class CreateCommission : AppCompatActivity() {
         val medium = findViewById<EditText>(R.id.mediumText)
         val tag1 = findViewById<EditText>(R.id.tag1Text)
         val tag2 = findViewById<EditText>(R.id.tag2Text)
+        val days = findViewById<EditText>(R.id.daysText)
 
         val titleText = title.text
         val descriptionText = description.text
@@ -157,7 +159,7 @@ class CreateCommission : AppCompatActivity() {
 
             //validate entered fields when save button is clicked
             validateFields(titleText, descriptionText, mediumText, tag1Text, tag2Text,
-                    imageUri, errorMessage, min.text, max.text)
+                    imageUri, errorMessage, min.text, max.text, days.text)
         }
 
         imageButton.setOnClickListener{
@@ -247,7 +249,7 @@ class CreateCommission : AppCompatActivity() {
     //validate that all necessary fields have been filled out
     private fun validateFields(titleText : Editable, descriptionText : Editable, mediumText : Editable,
                                tag1Text : Editable, tag2Text : Editable, imageUri : Uri?,
-                               errorMessage : TextView, min: Editable, max: Editable) : Boolean{
+                               errorMessage : TextView, min: Editable, max: Editable, days : Editable) : Boolean{
         if(titleText.isEmpty()){
             errorMessage.text = "Enter a Title"
             return false
@@ -292,14 +294,19 @@ class CreateCommission : AppCompatActivity() {
             }
         }
 
+        if(days.toString().isEmpty()){
+            errorMessage.text = "Enter an estimated completion time"
+            return false
+        }
+
         createCommission(titleText.toString(), descriptionText.toString(), min.toString().toDouble(), max.toString().toDouble(),
-        mediumText.toString(), tag1Text.toString(), tag2Text.toString(), imageUri.toString(), uid, selectedET)
+        mediumText.toString(), tag1Text.toString(), tag2Text.toString(), imageUri.toString(), uid, days.toString().toInt())
         return true
     }
 
 
     private fun createCommission(title:String, description:String, min:Double, max:Double, medium:String, tag1:String, tag2:String, uri:String,
-    uid:String, time:String){
+    uid:String, time:Int){
         //val
         numComms += 1
         val ref = FirebaseDatabase.getInstance().getReference("/Commissions/$uid/$numComms")
