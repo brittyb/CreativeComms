@@ -21,13 +21,13 @@
             android:name=".SearchActivity"
             android:exported="false" />
         <activity
-            android:name=".Search"
-            android:exported="false" />
-        <activity
             android:name=".CreateCommission"
             android:exported="false" />
         <activity
             android:name=".EditProfileActivity"
+            android:exported="false" />
+        <activity
+            android:name=".EditCommissionActivity"
             android:exported="false" />
         <activity
             android:name=".ViewCommissionActivity"

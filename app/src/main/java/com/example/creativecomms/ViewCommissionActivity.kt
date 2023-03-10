@@ -9,6 +9,8 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
+import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
@@ -19,6 +21,7 @@ import de.hdodenhof.circleimageview.CircleImageView
 
 class ViewCommissionActivity : AppCompatActivity() {
     lateinit var user : User
+    private val uid = FirebaseAuth.getInstance().uid ?: ""
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_view_commission)
@@ -36,6 +39,7 @@ class ViewCommissionActivity : AppCompatActivity() {
         val max = findViewById<TextView>(R.id.maxPriceText)
 
         val requestButton = findViewById<Button>(R.id.requestButton)
+        val saveButton = findViewById<Button>(R.id.saveButton)
         //double check to see if the commission exists before displaying
         if(intent.getSerializableExtra("Commission") != null){
             //get commission from intent
@@ -53,22 +57,7 @@ class ViewCommissionActivity : AppCompatActivity() {
                     user = dataSnapshot.getValue(User::class.java)!!
                     //set username text
                     username.text = user.username
-                    //get pfp from uid
-                    val imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(user.profileImageUri.toString())
-                    //val imageRef = storageRef.child()
-                    Log.d("DatabaseLog", user.profileImageUri.toString())
-                    val MAX_SIZE = 1024*1024 * 5
-                    imageRef.getBytes(MAX_SIZE.toLong())
-                        .addOnSuccessListener { data ->
-                            // Convert the retrieved data to a Bitmap
-                            val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
-                            pfp.setImageBitmap(bitmap)
-                            // Use the bitmap as needed
-                        }
-                        .addOnFailureListener { exception ->
-                            // Handle any errors
-                            Log.d("DatabaseLog", "Did not get bytes")
-                        }
+                    Glide.with(applicationContext).load(user.profileImageUri).into(pfp)
                     //get rating from uid
                     rating.rating = user.rating!!
                 }
@@ -78,7 +67,7 @@ class ViewCommissionActivity : AppCompatActivity() {
             }
             database.addListenerForSingleValueEvent(userListener)
             val uri = commission.imageUri
-            Picasso.get().load(uri).into(image)
+            Glide.with(applicationContext).load(uri).into(image)
 
             description.text = "Description: ${commission.description}"
 
@@ -92,11 +81,41 @@ class ViewCommissionActivity : AppCompatActivity() {
 
 
             requestButton.setOnClickListener{
-                val intent = Intent(this, RequestActivity::class.java)
-                intent.putExtra("Title", commission.title)
-                intent.putExtra("commUID", commission.uid)
-                intent.putExtra("ID", commission.commID)
-                startActivity(intent)
+                if(uid != commission.uid){
+                    val intent = Intent(this, RequestActivity::class.java)
+                    intent.putExtra("Title", commission.title)
+                    intent.putExtra("commUID", commission.uid)
+                    intent.putExtra("ID", commission.commID)
+                    startActivity(intent)
+                }
+
+            }
+
+            saveButton.setOnClickListener {
+                if(uid != commission.uid){
+                    val savesData = FirebaseDatabase.getInstance().getReference("Saves/$uid")
+                    val savesListener = object : ValueEventListener {
+                        override fun onDataChange(dataSnapshot: DataSnapshot) {
+                            val newSaves = FirebaseDatabase.getInstance().getReference("Saves/$uid/${commission.commID}")
+                            var alreadyAdded = false
+                            for(save in dataSnapshot.children){
+                                var saveID = save.value
+                                if(saveID == commission.commID){
+                                    alreadyAdded = true
+
+                                }
+                            }
+                            if(!alreadyAdded){
+                                newSaves.setValue(commission.commID)
+                            }
+                        }
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            // handle error
+                        }
+                    }
+                    savesData.addListenerForSingleValueEvent(savesListener)
+                }
+
             }
 
         }else{

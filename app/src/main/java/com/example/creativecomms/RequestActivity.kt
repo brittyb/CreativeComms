@@ -11,6 +11,7 @@ import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
 import android.widget.*
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -65,21 +66,7 @@ class RequestActivity : AppCompatActivity() {
                 username.text=user.username.toString()
 
 
-                //get profile uri
-                val imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(user.profileImageUri.toString())
-                Log.d("DatabaseLog", user.profileImageUri.toString())
-                val MAX_SIZE = 1024*1024*5
-                imageRef.getBytes(MAX_SIZE.toLong())
-                    .addOnSuccessListener { data ->
-                        // Convert the retrieved data to a Bitmap
-                        val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
-                        profilePic.setImageBitmap(bitmap)
-                        // Use the bitmap as needed
-                    }
-                    .addOnFailureListener { exception ->
-                        // Handle any errors
-                        Log.d("DatabaseLog", "Did not get bytes")
-                    }
+                Glide.with(applicationContext).load(user.profileImageUri).into(profilePic)
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 // handle error

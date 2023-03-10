@@ -1,10 +1,6 @@
 package com.example.creativecomms
 
-import android.app.Activity
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.media.Image
-import android.media.Rating
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -12,7 +8,6 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.View
 import android.widget.*
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
@@ -24,13 +19,13 @@ import com.google.firebase.storage.FirebaseStorage
 import de.hdodenhof.circleimageview.CircleImageView
 import java.util.*
 
-class CreateCommission : AppCompatActivity() {
+class EditCommissionActivity : AppCompatActivity() {
     //pick image variables
     private val pickImage = 100
     private var imageUri: Uri? = null
     private var imageUriText : String? = ""
     private lateinit var commPic : ImageView
-
+    private var id = ""
     //user's id
     private val uid = FirebaseAuth.getInstance().uid ?: ""
 
@@ -44,11 +39,6 @@ class CreateCommission : AppCompatActivity() {
     private lateinit var username : TextView
     private lateinit var rating : RatingBar
 
-    //int variable for number of current commissions
-
-    private var numComms : Int = 0
-
-
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -60,37 +50,8 @@ class CreateCommission : AppCompatActivity() {
         rating = findViewById<RatingBar>(R.id.ratingBar)
 
 
-        //Get user information for pfp, username, and rating
-        val database = FirebaseDatabase.getInstance().getReference("/users/$uid")
-        val userListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Get User from firebase
-                user = dataSnapshot.getValue(User::class.java)!!
-                username.text=user.username.toString()
 
 
-                Glide.with(applicationContext).load(user.profileImageUri).into(profilePic)
-
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-                // handle error
-            }
-        }
-        database.addListenerForSingleValueEvent(userListener)
-
-
-        //listener for number of comms in firebase
-        val database2 = FirebaseDatabase.getInstance().getReference("/Commissions/$uid")
-        val commListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Get Number of Commissions from firebase
-                numComms = dataSnapshot.childrenCount.toInt()
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-                // handle error
-            }
-        }
-        database2.addListenerForSingleValueEvent(commListener)
 
         /*
         //Dropdown menu
@@ -130,10 +91,10 @@ class CreateCommission : AppCompatActivity() {
         val tag2 = findViewById<EditText>(R.id.tag2Text)
         val days = findViewById<EditText>(R.id.daysText)
 
-        val titleText = title.text
-        val descriptionText = description.text
+        var titleText = title.text
+        var descriptionText = description.text
 
-        val mediumText = medium.text
+        var mediumText = medium.text
         val tag1Text = tag1.text
         val tag2Text = tag2.text
 
@@ -142,6 +103,55 @@ class CreateCommission : AppCompatActivity() {
 
         val errorMessage = findViewById<TextView>(R.id.createComm_error)
         imageUriText = imageUri.toString()
+
+        if(intent.getSerializableExtra("Commission") != null){
+            //get commission from intent
+            val commission = intent.getSerializableExtra("Commission") as Commission
+            //set values
+            title.setText(commission.title)
+            titleText = title.text
+            id = commission.commID.toString()
+            //Get uid information from commission uid
+            val commUID = commission.uid
+
+            val database = FirebaseDatabase.getInstance().getReference("/users/$commUID")
+            //Get current user and display username and rating
+            val userListener = object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    // get user data from uid
+                    user = dataSnapshot.getValue(User::class.java)!!
+                    //set username text
+                    username.text = user.username
+                    Glide.with(applicationContext).load(user.profileImageUri).into(profilePic)
+                    //get rating from uid
+                    rating.rating = user.rating!!
+                }
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // handle error
+                }
+            }
+            database.addListenerForSingleValueEvent(userListener)
+            val uri = commission.imageUri
+            imageUri = Uri.parse(uri)
+            Glide.with(applicationContext).load(uri).into(commPic)
+
+            description.setText("${commission.description}")
+            descriptionText = description.text
+
+            medium.setText("${commission.medium}")
+            mediumText = medium.text
+
+            days.setText("${commission.selectedET}")
+
+            min.setText("${commission.minPrice}")
+            max.setText("${commission.maxPrice}")
+
+
+
+
+        }else{
+            //Go to another page
+        }
 
         saveButton.setOnClickListener{
 
@@ -296,10 +306,9 @@ class CreateCommission : AppCompatActivity() {
     private fun createCommission(title:String, description:String, min:Double, max:Double, medium:String, tag1:String, tag2:String, uri:String,
     uid:String, time:Int){
 
-        val ref2 = FirebaseDatabase.getInstance().getReference("/Commissions/$uid")
-        val id = ref2.push().key
+
         val ref = FirebaseDatabase.getInstance().getReference("/Commissions/$uid/$id")
-        commission = Commission(title, description, min, max, medium, tag1, tag2,uri,uid,time, id)
+        commission = Commission(title, description, min, max, medium, tag1, tag2,uri,uid,time,id)
         ref.setValue(commission)
         uploadImageToFirebaseStorage(id.toString())
 

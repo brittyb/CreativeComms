@@ -27,7 +27,7 @@ class RequestsAdapter(private val mList: MutableList<RequestsViewModel>) : Recyc
 
         // sets the text to the textview from our itemHolder class
         holder.titleView.text = RequestsViewModel.title
-        holder.userView.text = RequestsViewModel.request.requesterUID
+        holder.userView.text = RequestsViewModel.reqUsername
 
 
         payButton.setOnClickListener(){

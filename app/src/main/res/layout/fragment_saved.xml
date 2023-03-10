@@ -6,10 +6,8 @@
     tools:context=".SavedFragment"
     android:background="@color/purple_200">
 
-    <!-- TODO: Update blank fragment layout -->
-    <TextView
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/my_recycler_view"
         android:layout_width="match_parent"
-        android:layout_height="match_parent"
-        android:text="hello_blank_fragment2" />
-
+        android:layout_height="match_parent" />
 </FrameLayout>

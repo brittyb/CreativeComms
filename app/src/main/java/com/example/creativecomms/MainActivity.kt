@@ -28,7 +28,7 @@ class MainActivity : AppCompatActivity() {
         setContentView(R.layout.mainactivity)
 
         auth = Firebase.auth
-
+        FirebaseAuth.getInstance().signOut()
         var email = findViewById<EditText>(R.id.et_user_name)
         var epassword = findViewById<EditText>(R.id.et_password)
         var loginButton = findViewById<Button>(R.id.btn_login)

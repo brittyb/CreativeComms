@@ -13,6 +13,7 @@ import android.widget.Button
 import android.widget.EditText
 import android.widget.ImageView
 import android.widget.TextView
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -28,13 +29,34 @@ class EditProfileActivity : AppCompatActivity() {
     private var uri: Uri? = null
     lateinit var user : User
     val uid = FirebaseAuth.getInstance().uid ?: ""
+    private var currentPassword = ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_edit_profile)
 
-        profilePic = findViewById<CircleImageView>(R.id.profileImage)
+        val newUsername = findViewById<EditText>(R.id.et_new_username)
+        val password = findViewById<EditText>(R.id.et_password)
+        val newPassword = findViewById<EditText>(R.id.et_new_password)
+        val newPasswordRepeat = findViewById<EditText>(R.id.et_new_password2)
 
+        val changeUserBtn = findViewById<Button>(R.id.edit_user_btn)
+        val changePassBtn = findViewById<Button>(R.id.edit_password_btn)
+        val changePfpBtn = findViewById<Button>(R.id.edit_pic_btn)
+        val saveChangesBtn = findViewById<Button>(R.id.save_changes_button)
+
+        val errText = findViewById<TextView>(R.id.errorText)
+
+        val newUsernameText = newUsername?.text
+        val passwordText = password?.text
+        val newPasswordText = newPassword?.text
+        val newPasswordRepeatText = newPasswordRepeat?.text
+
+        var correctNewUsr = ""
+        var correctNewPassword = ""
+
+        profilePic = findViewById<CircleImageView>(R.id.profileImage)
+        Log.d("DatabaseLog", "Edit " + uid)
         val database = FirebaseDatabase.getInstance().getReference("/users/$uid")
         val userListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
@@ -42,20 +64,61 @@ class EditProfileActivity : AppCompatActivity() {
                 user = dataSnapshot.getValue(User::class.java)!!
 
                 //get profile uri
-                val imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(user.profileImageUri.toString())
-                Log.d("DatabaseLog", user.profileImageUri.toString())
-                val MAX_SIZE = 1024*1024*5
-                imageRef.getBytes(MAX_SIZE.toLong())
-                    .addOnSuccessListener { data ->
-                        // Convert the retrieved data to a Bitmap
-                        val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
-                        profilePic.setImageBitmap(bitmap)
-                        // Use the bitmap as needed
+                Glide.with(applicationContext).load(user.profileImageUri).into(profilePic)
+                correctNewPassword = user.password.toString()
+                correctNewUsr = user.username.toString()
+                changePassBtn.setOnClickListener {
+                    if(passwordText.toString() == correctNewPassword){
+                        if(newPasswordText.toString() == newPasswordRepeatText.toString()){
+                            if(newPasswordText?.length!! <= 5){
+                                errText.text = "Password must be at least 6 characters"
+
+                            }else{
+                                if(newPasswordText?.contains(" ") == true){
+                                    errText.text = "Password must not contain spaces"
+                                }else{
+                                    correctNewPassword = newPasswordText.toString()
+                                    errText.text = "New password is valid. Press save changes to save password"
+                                }
+                            }
+                        }else{
+                            errText.text = "New passwords do not match"
+                        }
+                    }else{
+                       errText.text = "Current password is incorrect"
                     }
-                    .addOnFailureListener { exception ->
-                        // Handle any errors
-                        Log.d("DatabaseLog", "Did not get bytes")
+                }
+
+                changeUserBtn.setOnClickListener {
+                    var isTaken = false
+                    val usersDatabase = FirebaseDatabase.getInstance().getReference("/users")
+                    val usernameListener = object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            for (user in snapshot.children) {
+                                val user = user.getValue(User::class.java)
+                                if(user?.username == newUsernameText.toString()){
+                                    errText.text = "Username already in use"
+                                    isTaken = true
+                                }
+                            }
+                            if(!isTaken){
+                                correctNewUsr = newUsernameText.toString()
+                            }
+                        }
+
+                        override fun onCancelled(databaseError: DatabaseError) {
+                            // handle error
+                        }
                     }
+                    usersDatabase.addListenerForSingleValueEvent(usernameListener)
+                }
+
+                saveChangesBtn.setOnClickListener {
+                    val usernameRef = FirebaseDatabase.getInstance().getReference("/users/$uid/username")
+                    usernameRef.setValue(correctNewUsr)
+                    val passwordRef = FirebaseDatabase.getInstance().getReference("/users/$uid/password")
+                    passwordRef.setValue(correctNewPassword)
+                    saveChanges() }
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 // handle error
@@ -64,26 +127,18 @@ class EditProfileActivity : AppCompatActivity() {
         database.addListenerForSingleValueEvent(userListener)
 
 
-        val newUsername = findViewById<EditText>(R.id.et_new_username)
-        val password = findViewById<EditText>(R.id.et_password)
-        val newPassword = findViewById<EditText>(R.id.et_new_password)
-        val newPasswordRepeat = findViewById<EditText>(R.id.et_new_password2)
 
+        val usersDatabase = FirebaseDatabase.getInstance().getReference("/users")
+        /*
+        val userListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
 
-
-        val changeUserBtn = findViewById<Button>(R.id.edit_user_btn)
-        val changePassBtn = findViewById<Button>(R.id.edit_password_btn)
-        val changePfpBtn = findViewById<Button>(R.id.edit_pic_btn)
-        val saveChangesBtn = findViewById<Button>(R.id.save_changes_button)
-
-
-        val errText = findViewById<TextView>(R.id.errorText)
-
-        val newUsernameText = newUsername?.text
-        val passwordText = password?.text
-        val newPasswordText = newPassword?.text
-        //val newPasswordRepeatText = newPasswordRepeat?.text
-
+            }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // handle error
+            }
+        }
+*/
 
 
         /*
@@ -130,21 +185,21 @@ class EditProfileActivity : AppCompatActivity() {
         }
 
         saveChangesBtn.setOnClickListener {
-            //account.username = newCorrectUser
-            //account.password = newCorrectPass
-            uploadImageToFirebaseStorage()
-            val intent = Intent(this, HomeActivity::class.java)
-            startActivity(intent)
+
         }
 
         }
 
+    private fun saveChanges(){
+        uploadImageToFirebaseStorage()
+        val intent = Intent(this, HomeActivity::class.java)
+        startActivity(intent)
+    }
     override fun onActivityResult(requestCode: Int, resultCode: Int, data: Intent?) {
         super.onActivityResult(requestCode, resultCode, data)
         if (resultCode == RESULT_OK && requestCode == pickImage) {
             uri = data?.data
-            val bitmap = MediaStore.Images.Media.getBitmap(contentResolver, uri)
-            profilePic?.setImageBitmap(bitmap)
+            Glide.with(applicationContext).load(uri).into(profilePic)
         }
     }
 

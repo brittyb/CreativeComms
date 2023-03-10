@@ -1,6 +1,5 @@
 package com.example.creativecomms
 import android.content.Intent
-import android.net.Uri
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -8,8 +7,9 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
-import com.example.creativecomms.ItemsViewModel
-import com.squareup.picasso.Picasso
+import com.bumptech.glide.Glide
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.FirebaseDatabase
 
 class CustomAdapter(private val mList: MutableList<ItemsViewModel>) : RecyclerView.Adapter<CustomAdapter.ViewHolder>() {
 
@@ -33,7 +33,7 @@ class CustomAdapter(private val mList: MutableList<ItemsViewModel>) : RecyclerVi
 
         // sets the image to the imageview from our itemHolder class
         val uri = ItemsViewModel.image
-        Picasso.get().load(uri).into(holder.imageView)
+        Glide.with(holder.itemView).load(uri).into(holder.imageView)
 
         // sets the text to the textview from our itemHolder class
         holder.textView.text = ItemsViewModel.text
@@ -44,12 +44,22 @@ class CustomAdapter(private val mList: MutableList<ItemsViewModel>) : RecyclerVi
             holder.itemView.context.startActivity(intent)
         }
 
-        /*
-        button_del.setOnClickListener{
-            removeItem(position)
+        button_ed.setOnClickListener {
+            val intent = Intent(holder.itemView.context, EditCommissionActivity::class.java)
+            intent.putExtra("Commission", ItemsViewModel.comm)
+            holder.itemView.context.startActivity(intent)
         }
 
-         */
+
+        button_del.setOnClickListener{
+            removeItem(position)
+            var commID = ItemsViewModel.comm.commID
+            val uid = FirebaseAuth.getInstance().currentUser?.uid
+            val ref = FirebaseDatabase.getInstance().getReference("Commissions/$uid/$commID")
+            ref.removeValue()
+        }
+
+
     }
 
     // return the number of the items in the list

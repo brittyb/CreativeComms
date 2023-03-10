@@ -1,5 +1,6 @@
 package com.example.creativecomms
 
+import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
@@ -18,6 +19,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
+import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
@@ -44,7 +46,7 @@ class AccountFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    private val uid = FirebaseAuth.getInstance().uid ?: ""
+    val uid = FirebaseAuth.getInstance().uid ?: ""
     lateinit var user : User
     private var numComms : Int = 0
     private lateinit var recyclerView : RecyclerView
@@ -79,7 +81,11 @@ class AccountFragment : Fragment() {
         val commButton : Button = view.findViewById(R.id.btn_comm)
 
         val logoutButton : Button = view.findViewById(R.id.btn_logout)
-
+        if(FirebaseAuth.getInstance().currentUser ==null){
+            FirebaseAuth.getInstance().signOut()
+            val intent = Intent(activity, MainActivity::class.java)
+            activity?.startActivity(intent)
+        }
 
         val database = FirebaseDatabase.getInstance().getReference("/users/$uid")
         Log.d("DatabaseLog", uid)
@@ -92,20 +98,7 @@ class AccountFragment : Fragment() {
                 user = dataSnapshot.getValue(User::class.java)!!
                 user_name.text = user.username
                 val imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(user.profileImageUri.toString())
-                //val imageRef = storageRef.child()
-                Log.d("DatabaseLog", user.profileImageUri.toString())
-                val MAX_SIZE = 1024*1024 * 5
-                imageRef.getBytes(MAX_SIZE.toLong())
-                    .addOnSuccessListener { data ->
-                        // Convert the retrieved data to a Bitmap
-                        val bitmap = BitmapFactory.decodeByteArray(data, 0, data.size)
-                        profilePic.setImageBitmap(bitmap)
-                        // Use the bitmap as needed
-                    }
-                    .addOnFailureListener { exception ->
-                        // Handle any errors
-                        Log.d("DatabaseLog", "Did not get bytes")
-                    }
+                Glide.with(context!!).load(user.profileImageUri).into(profilePic)
 
                 rating.rating = user.rating!!
             }

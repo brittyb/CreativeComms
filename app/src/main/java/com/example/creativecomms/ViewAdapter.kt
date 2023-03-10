@@ -1,5 +1,7 @@
 package com.example.creativecomms
+import android.app.Activity
 import android.content.ClipData.Item
+import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import android.view.LayoutInflater
@@ -9,8 +11,10 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
+import com.bumptech.glide.Glide
 import com.example.creativecomms.ItemsViewModel
 import com.squareup.picasso.Picasso
+
 
 class ViewAdapter(private val mList: MutableList<ItemsViewModel>) : RecyclerView.Adapter<ViewAdapter.ViewHolder>() {
 
@@ -31,8 +35,8 @@ class ViewAdapter(private val mList: MutableList<ItemsViewModel>) : RecyclerView
         val button_view = holder.itemView.findViewById<Button>(R.id.view_button)
 
         val uri = ItemsViewModel.image
-        Picasso.get().load(uri).into(holder.imageView)
-
+        //Picasso.get().load(uri).into(holder.imageView)
+        Glide.with(holder.itemView).load(uri).into(holder.imageView)
 
         // sets the text to the textview from our itemHolder class
         holder.textView.text = ItemsViewModel.text
