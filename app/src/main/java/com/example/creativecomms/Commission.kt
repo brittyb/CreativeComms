@@ -10,6 +10,4 @@ data class Commission(var title : String? = "",
         var imageUri : String? = "",
         var uid : String? = "",
         var selectedET : Int? = 0,
-        var commID : String? = "") : java.io.Serializable{
-
-}
+        var commID : String? = "") : java.io.Serializable

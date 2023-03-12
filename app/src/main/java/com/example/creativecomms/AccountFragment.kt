@@ -1,34 +1,24 @@
 package com.example.creativecomms
 
-import android.content.Context
 import android.os.Bundle
 import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
-import android.view.TextureView
 import android.view.View
 import android.view.ViewGroup
-import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.media.Image
-import android.net.Uri
-import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.ktx.auth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.database.ktx.database
-import com.google.firebase.ktx.Firebase
-import com.google.firebase.storage.FirebaseStorage
+
 import de.hdodenhof.circleimageview.CircleImageView
 
 
@@ -46,9 +36,8 @@ class AccountFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
-    val uid = FirebaseAuth.getInstance().uid ?: ""
+    private val uid = FirebaseAuth.getInstance().uid ?: ""
     lateinit var user : User
-    private var numComms : Int = 0
     private lateinit var recyclerView : RecyclerView
     private var data = ArrayList<ItemsViewModel>()
 
@@ -72,88 +61,94 @@ class AccountFragment : Fragment() {
 
     }
 
-    override fun onViewCreated(view: View, savedInstanceState: Bundle?){
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
 
-        val user_name : TextView = view.findViewById(R.id.profileName)
+        //Get input fields
+        val username : TextView = view.findViewById(R.id.profileName)
         val rating: RatingBar = view.findViewById(R.id.profileRating)
         val profilePic: CircleImageView = view.findViewById(R.id.profileImage)
         val editButton : Button = view.findViewById(R.id.btn_editProfile)
         val commButton : Button = view.findViewById(R.id.btn_comm)
-
         val logoutButton : Button = view.findViewById(R.id.btn_logout)
+
+        //If user is not logged in, go to login page
         if(FirebaseAuth.getInstance().currentUser ==null){
             FirebaseAuth.getInstance().signOut()
             val intent = Intent(activity, MainActivity::class.java)
             activity?.startActivity(intent)
         }
 
+        //Database reference to the current user's info
         val database = FirebaseDatabase.getInstance().getReference("/users/$uid")
         Log.d("DatabaseLog", uid)
 
 
-        //Get current user and display username and rating
+        //Get info from current user and display
         val userListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Get Post object and use the values to update the UI
+                //Get user from snapshot
                 user = dataSnapshot.getValue(User::class.java)!!
-                user_name.text = user.username
-                val imageRef = FirebaseStorage.getInstance().getReferenceFromUrl(user.profileImageUri.toString())
+                //set username to username stored in database
+                username.text = user.username
+                //load image with glide
                 Glide.with(context!!).load(user.profileImageUri).into(profilePic)
-
+                //get rating
                 rating.rating = user.rating!!
             }
             override fun onCancelled(databaseError: DatabaseError) {
                 // handle error
             }
         }
-
-
+        //add the database listener
       database.addListenerForSingleValueEvent(userListener)
 
 
-        logoutButton.setOnClickListener(){
+        //log the user out
+        logoutButton.setOnClickListener {
             FirebaseAuth.getInstance().signOut()
             val intent = Intent(activity, MainActivity::class.java)
             activity?.startActivity(intent)
         }
 
 
-
+        //go to edit account details page
         editButton.setOnClickListener {
             val intent = Intent(activity, EditProfileActivity::class.java)
             activity?.startActivity(intent)
         }
 
-        commButton.setOnClickListener{
+        //go to add commission page
+        commButton.setOnClickListener {
             val intent = Intent(activity, CreateCommission::class.java)
             activity?.startActivity(intent)
         }
 
 
-        // getting the recyclerview by its id
-        recyclerView = view.findViewById<RecyclerView>(R.id.my_recycler_view)
+        // get recycler view
+        recyclerView = view.findViewById(R.id.my_recycler_view)
 
         // this creates a vertical layout Manager
         recyclerView.layoutManager = LinearLayoutManager(this.activity)
 
 
-        // ArrayList of class ItemsViewModel
-        //val data = ArrayList<ItemsViewModel>()
 
 
-//listener for number of comms in firebase
+    //listener for commissions
         val commsDatabase = FirebaseDatabase.getInstance().getReference("/Commissions/$uid")
         val commListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Get Number of Commissions from firebase
+                //clear recycler view to repopulate
             data.clear()
                 if(dataSnapshot.exists()){
-                    for(userSnapshot in dataSnapshot.children){
-                        val comm = userSnapshot.getValue(Commission::class.java)
+                    //for each commission in the user's commission data list
+                    for(commission in dataSnapshot.children){
+                        val comm = commission.getValue(Commission::class.java)
+                        //add to recycler view
                         data.add(ItemsViewModel(comm?.imageUri.toString(), comm?.title.toString(),
                             comm!!
                         ))
                     }
+                    //add adapter to recycler view
                     recyclerView.adapter = CustomAdapter(data)
                 }
 
@@ -162,6 +157,7 @@ class AccountFragment : Fragment() {
                 // handle error
             }
         }
+        //add commission listener
         commsDatabase.addListenerForSingleValueEvent(commListener)
 
 

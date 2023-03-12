@@ -58,30 +58,39 @@ class SavedFragment : Fragment() {
         val savesDatabase = FirebaseDatabase.getInstance().getReference("/Saves/$uid")
         val savesListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
+                var exists = false
                 data.clear()
                 for(save in dataSnapshot.children){
                     val saveID = save.value
                     val commData = FirebaseDatabase.getInstance().getReference("/Commissions")
                     val commListener = object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
+
                             for(user in snapshot.children){
                                 for(comm in user.children){
                                     val commission = comm.getValue(Commission::class.java)
                                     if(commission?.commID == saveID){
+                                        exists = true
                                         data.add(ItemsViewModel(commission?.imageUri.toString(), commission?.title.toString(),
                                             commission!!
                                         ))
-                                        Log.d("SavesLog", "adding")
                                         recyclerView.adapter = ViewAdapter(data)
                                     }
                                 }
                             }
+
+
                         }
                         override fun onCancelled(databaseError: DatabaseError) {
                             // handle error
                         }
                     }
                     commData.addListenerForSingleValueEvent(commListener)
+                    //TODO: try to remove posts that do not exist from saves list :((
+                    if(!exists){
+                        val saveDelDatabase = FirebaseDatabase.getInstance().getReference("/Saves/$uid/${save}")
+                        saveDelDatabase.removeValue()
+                    }
                 }
 
 

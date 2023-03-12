@@ -3,8 +3,23 @@
     <!-- TODO: Remove or change this placeholder text -->
     <string name="hello_blank_fragment">Hello blank fragment</string>
     <string name="btn">Button</string>
-    <string name="message">Hello Geeks!! This is a Button.</string>
     <string name="accountName">Username</string>
+
+
+    //Login Page strings
+    <string name="enter_email_error">Enter an email address and password</string>
+
+    //Create Commission Page
+    <string name = "title_error">Enter a title</string>
+    <string name = "description_error">Enter a description</string>
+    <string name = "medium_error">Enter an art medium</string>
+    <string name = "tags_error">Tags must be different from each other</string>
+    <string name = "image_error">Must upload an image</string>
+    <string name = "enter_prices_error">Enter a minimum and maximum price value</string>
+    <string name = "zero_price_error">Prices cannot be zero</string>
+    <string name = "max_lower_error">Maximum price cannot be larger than minimum</string>
+    <string name = "time_error">Enter an estimated completion time</string>
+
 
     <string name="selected_item">Selected item:</string>
 

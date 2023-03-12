@@ -42,7 +42,7 @@ class ViewAdapter(private val mList: MutableList<ItemsViewModel>) : RecyclerView
         holder.textView.text = ItemsViewModel.text
 
 
-        button_view.setOnClickListener(){
+        holder.itemView.setOnClickListener{
             val intent = Intent(holder.itemView.context, ViewCommissionActivity::class.java)
             intent.putExtra("Commission", ItemsViewModel.comm)
             holder.itemView.context.startActivity(intent)

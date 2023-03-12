@@ -310,7 +310,13 @@ class EditCommissionActivity : AppCompatActivity() {
         val ref = FirebaseDatabase.getInstance().getReference("/Commissions/$uid/$id")
         commission = Commission(title, description, min, max, medium, tag1, tag2,uri,uid,time,id)
         ref.setValue(commission)
-        uploadImageToFirebaseStorage(id.toString())
+        val commission = intent.getSerializableExtra("Commission") as Commission
+        if(uri != commission.imageUri){
+            uploadImageToFirebaseStorage(id)
+        }
+        val intent = Intent(this, HomeActivity::class.java)
+        startActivity(intent)
+
 
 
     }
@@ -333,6 +339,6 @@ class EditCommissionActivity : AppCompatActivity() {
     private fun savePictureToFirebase(uri : String, id : String) {
         val uid = FirebaseAuth.getInstance().uid ?: ""
         val ref = FirebaseDatabase.getInstance().getReference("Commissions/$uid/$id/imageUri")
-        ref.setValue(uri).addOnSuccessListener { Log.d("CreateComm", "Successfully set value") }
+        ref.setValue(uri).addOnSuccessListener { Log.d("CreateComm", "Successfully set value")}
     }
 }

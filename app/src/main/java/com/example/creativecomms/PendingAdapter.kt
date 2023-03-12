@@ -1,4 +1,5 @@
 package com.example.creativecomms
+import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -30,7 +31,12 @@ class PendingAdapter(private val mList: MutableList<PendingViewModel>) : Recycle
         holder.statusView.text = PendingViewModel.status
 
 
-        payButton.setOnClickListener(){
+        holder.titleView.setOnClickListener {
+            val intent = Intent(holder.itemView.context, ViewRequestActivity::class.java)
+            intent.putExtra("Request", PendingViewModel.request)
+            holder.itemView.context.startActivity(intent)
+        }
+        payButton.setOnClickListener() {
 
         }
     }

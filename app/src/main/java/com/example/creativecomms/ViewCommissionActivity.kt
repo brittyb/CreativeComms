@@ -40,6 +40,13 @@ class ViewCommissionActivity : AppCompatActivity() {
 
         val requestButton = findViewById<Button>(R.id.requestButton)
         val saveButton = findViewById<Button>(R.id.saveButton)
+
+        val homeButton = findViewById<ImageView>(R.id.homeButton)
+
+        homeButton.setOnClickListener {
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
+        }
         //double check to see if the commission exists before displaying
         if(intent.getSerializableExtra("Commission") != null){
             //get commission from intent
@@ -73,14 +80,14 @@ class ViewCommissionActivity : AppCompatActivity() {
 
             medium.text = "Medium: ${commission.medium}"
 
-            time.text = "Estimated Completion Time: ${commission.selectedET}"
+            time.text = "Estimated Completion Time: ${commission.selectedET} days"
 
             min.text = "Minimum Price: ${commission.minPrice}"
 
             max.text = "Maximum Price: ${commission.maxPrice}"
 
 
-            requestButton.setOnClickListener{
+            requestButton.setOnClickListener {
                 if(uid != commission.uid){
                     val intent = Intent(this, RequestActivity::class.java)
                     intent.putExtra("Title", commission.title)

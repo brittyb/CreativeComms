@@ -109,15 +109,17 @@ class RequestActivity : AppCompatActivity() {
         requestButton.setOnClickListener(){
             if(validateFields(price.text, errorText) == true){
                 val commUID = extras.getStringExtra("commUID")
+
                 request = Request(description.text.toString(), imageUri.toString(), correctCommID, uid,
                     commUID, price.text.toString().toDouble(), true, false, false)
                 var ref = FirebaseDatabase.getInstance().getReference("/Requests/$uid/")
+
                 ref = ref.push()
+                val reqID = ref.key.toString()
                 ref.setValue(request)
-                var refArtist = FirebaseDatabase.getInstance().getReference("/ArtistRequests/$commUID")
-                refArtist = refArtist.push()
+                var refArtist = FirebaseDatabase.getInstance().getReference("/ArtistRequests/$commUID/$reqID")
                 refArtist.setValue(request)
-                uploadImageToFirebaseStorage()
+                uploadImageToFirebaseStorage(reqID)
             }
 
         }
@@ -138,7 +140,7 @@ class RequestActivity : AppCompatActivity() {
         }
     }
 
-    private fun uploadImageToFirebaseStorage() {
+    private fun uploadImageToFirebaseStorage(id : String) {
         if(imageUri == null) return
         val filename = UUID.randomUUID().toString()
         val ref = FirebaseStorage.getInstance().getReference("CommissionPics/$filename")
@@ -147,15 +149,23 @@ class RequestActivity : AppCompatActivity() {
                 Log.d("RequestLog", "Successfully uploaded pfp image: ${it.metadata?.path}")
                 ref.downloadUrl.addOnSuccessListener {
                     Log.d("RequestLog", "${it.toString()}")
-                    savePictureToFirebase(it.toString())
+                    savePictureToFirebase(it.toString(), id)
                 }
             }
     }
 
-    private fun savePictureToFirebase(uri : String) {
+    private fun savePictureToFirebase(uri : String, id : String) {
         val uid = FirebaseAuth.getInstance().uid ?: ""
-        val ref = FirebaseDatabase.getInstance().getReference("Requests/$uid/one")
-        ref.setValue(uri).addOnSuccessListener { Log.d("RequestLog", "Successfully set value") }
+        val extras = intent
+        val commUID = extras.getStringExtra("commUID")
+        val ref = FirebaseDatabase.getInstance().getReference("Requests/$uid/$id/imageUri")
+        ref.setValue(uri).addOnSuccessListener { Log.d("RequestLog", "Successfully set value")}
+            val refArtist = FirebaseDatabase.getInstance().getReference("ArtistRequests/$commUID/$id/imageUri")
+            refArtist.setValue(uri).addOnSuccessListener {
+                Log.d("RequestLog", "Successfully set value")
+            }
+        val intent = Intent(this, HomeActivity::class.java)
+        startActivity(intent)
     }
 
 

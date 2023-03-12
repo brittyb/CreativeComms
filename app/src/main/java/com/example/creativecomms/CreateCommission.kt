@@ -1,10 +1,6 @@
 package com.example.creativecomms
 
-import android.app.Activity
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.media.Image
-import android.media.Rating
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -12,7 +8,6 @@ import android.provider.MediaStore
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.Log
-import android.view.View
 import android.widget.*
 import com.bumptech.glide.Glide
 import com.google.firebase.auth.FirebaseAuth
@@ -37,7 +32,6 @@ class CreateCommission : AppCompatActivity() {
     //commission variable and user
     lateinit var commission : Commission
     lateinit var user : User
-    //var selectedET : String = "Varies"
 
     //UI elements
     private lateinit var profilePic : CircleImageView
@@ -46,7 +40,6 @@ class CreateCommission : AppCompatActivity() {
 
     //int variable for number of current commissions
 
-    private var numComms : Int = 0
 
 
 
@@ -55,9 +48,9 @@ class CreateCommission : AppCompatActivity() {
         setContentView(R.layout.activity_create_commission)
 
 
-        profilePic = findViewById<CircleImageView>(R.id.profileImage)
-        username = findViewById<TextView>(R.id.username_text)
-        rating = findViewById<RatingBar>(R.id.ratingBar)
+        profilePic = findViewById(R.id.profileImage)
+        username = findViewById(R.id.username_text)
+        rating = findViewById(R.id.ratingBar)
 
 
         //Get user information for pfp, username, and rating
@@ -78,19 +71,6 @@ class CreateCommission : AppCompatActivity() {
         }
         database.addListenerForSingleValueEvent(userListener)
 
-
-        //listener for number of comms in firebase
-        val database2 = FirebaseDatabase.getInstance().getReference("/Commissions/$uid")
-        val commListener = object : ValueEventListener {
-            override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Get Number of Commissions from firebase
-                numComms = dataSnapshot.childrenCount.toInt()
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-                // handle error
-            }
-        }
-        database2.addListenerForSingleValueEvent(commListener)
 
         /*
         //Dropdown menu
@@ -124,22 +104,29 @@ class CreateCommission : AppCompatActivity() {
         min.addDecimalLimiter()
         val max = findViewById<EditText>(R.id.maxPriceText)
         max.addDecimalLimiter()
-        commPic = findViewById<ImageView>(R.id.commPic)
+        commPic = findViewById(R.id.commPic)
         val medium = findViewById<EditText>(R.id.mediumText)
         val tag1 = findViewById<EditText>(R.id.tag1Text)
         val tag2 = findViewById<EditText>(R.id.tag2Text)
         val days = findViewById<EditText>(R.id.daysText)
 
+        //get text inputs
         val titleText = title.text
         val descriptionText = description.text
-
         val mediumText = medium.text
         val tag1Text = tag1.text
         val tag2Text = tag2.text
 
+        //buttons
         val saveButton = findViewById<Button>(R.id.saveComm_btn)
         val imageButton = findViewById<Button>(R.id.btn_addImage)
+        val homeButton = findViewById<ImageView>(R.id.homeButton)
 
+        homeButton.setOnClickListener {
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)
+        }
+        //error message text view
         val errorMessage = findViewById<TextView>(R.id.createComm_error)
         imageUriText = imageUri.toString()
 
@@ -239,28 +226,29 @@ class CreateCommission : AppCompatActivity() {
                                tag1Text : Editable, tag2Text : Editable, imageUri : Uri?,
                                errorMessage : TextView, min: Editable, max: Editable, days : Editable) : Boolean{
         if(titleText.isEmpty()){
-            errorMessage.text = "Enter a Title"
+            errorMessage.text = getString(R.string.title_error)
             return false
         }
 
         if(descriptionText.isEmpty()){
-            errorMessage.text = "Enter a Description"
+            errorMessage.text = getString(R.string.description_error)
             return false
         }
 
         if(mediumText.isEmpty()){
-            errorMessage.text = "Enter a Medium"
+            errorMessage.text = getString(R.string.medium_error)
             return false
         }
+        //make sure tags are not the same
         if(tag1Text.isNotEmpty() && tag2Text.isNotEmpty()){
             if(tag1Text.toString() == tag2Text.toString()){
-                errorMessage.text = "Tags must be different from each other"
+                errorMessage.text = getString(R.string.tags_error)
                 return false
             }
         }
 
         if(imageUri == null){
-            errorMessage.text = "Must upload an image"
+            errorMessage.text = getString(R.string.image_error)
             return false
         }
 
@@ -268,39 +256,45 @@ class CreateCommission : AppCompatActivity() {
 
 
         if(min.toString().isEmpty() || max.toString().isEmpty()){
-            errorMessage.text = "Enter a minimum and maximum price value"
+            errorMessage.text = getString(R.string.enter_prices_error)
             return false
         }else{
+            //make sure prices are not 0
             if(min.toString().toDouble() == 0.00 || max.toString().toDouble() == 0.00){
-                errorMessage.text = "Minimum and maximum values cannot be 0.0"
+                errorMessage.text = getString(R.string.zero_price_error)
                 return false
             }
 
+            //make sure min not bigger than max
             if(min.toString().toDouble() > max.toString().toDouble()){
-                errorMessage.text = "Maximum value cannot be lower or equal to minimum value"
+                errorMessage.text = getString(R.string.max_lower_error)
                 return false
             }
         }
 
         if(days.toString().isEmpty()){
-            errorMessage.text = "Enter an estimated completion time"
+            errorMessage.text = getString(R.string.time_error)
             return false
         }
 
+        //create a commission object
         createCommission(titleText.toString(), descriptionText.toString(), min.toString().toDouble(), max.toString().toDouble(),
         mediumText.toString(), tag1Text.toString(), tag2Text.toString(), imageUri.toString(), uid, days.toString().toInt())
         return true
     }
 
 
+    //create a commission and add to firebase
     private fun createCommission(title:String, description:String, min:Double, max:Double, medium:String, tag1:String, tag2:String, uri:String,
     uid:String, time:Int){
 
         val ref2 = FirebaseDatabase.getInstance().getReference("/Commissions/$uid")
+        //get random commission id
         val id = ref2.push().key
         val ref = FirebaseDatabase.getInstance().getReference("/Commissions/$uid/$id")
         commission = Commission(title, description, min, max, medium, tag1, tag2,uri,uid,time, id)
         ref.setValue(commission)
+        //upload commission image to storage
         uploadImageToFirebaseStorage(id.toString())
 
 
@@ -311,19 +305,22 @@ class CreateCommission : AppCompatActivity() {
         val filename = UUID.randomUUID().toString()
         val ref = FirebaseStorage.getInstance().getReference("CommissionPics/$filename")
         ref.putFile(imageUri!!)
-            .addOnSuccessListener {
+            .addOnSuccessListener { it ->
                 Log.d("EditProfileActivity", "Successfully uploaded pfp image: ${it.metadata?.path}")
                 ref.downloadUrl.addOnSuccessListener {
-                    Log.d("EditProfileActivity", "${it.toString()}")
+                    Log.d("EditProfileActivity", it.toString())
                     savePictureToFirebase(it.toString(), id)
                 }
             }
+
     }
 
 
     private fun savePictureToFirebase(uri : String, id : String) {
         val uid = FirebaseAuth.getInstance().uid ?: ""
         val ref = FirebaseDatabase.getInstance().getReference("Commissions/$uid/$id/imageUri")
-        ref.setValue(uri).addOnSuccessListener { Log.d("CreateComm", "Successfully set value") }
+        ref.setValue(uri).addOnSuccessListener { Log.d("CreateComm", "Successfully set value")
+            val intent = Intent(this, HomeActivity::class.java)
+            startActivity(intent)}
     }
 }

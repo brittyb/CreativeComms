@@ -10,6 +10,7 @@ import android.view.ViewGroup
 import android.widget.AdapterView
 import android.widget.Button
 import android.widget.GridView
+import android.widget.TextView
 import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
@@ -56,6 +57,7 @@ class SearchFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?){
+        val noResultsText = view.findViewById<TextView>(R.id.noResultsText)
         // getting the recyclerview by its id
         recyclerView = view.findViewById<RecyclerView>(R.id.my_recycler_view)
 
@@ -85,21 +87,23 @@ class SearchFragment : Fragment() {
                         //iterate through all commissions in each uid and add to list
                         for(userSnapshot in commission.children){
                             val comm = userSnapshot.getValue(Commission::class.java)
-                            childrenList.add(comm!!)
+                            if(comm?.uid != uid){
+                                childrenList.add(comm!!)
+                            }
+
                         }
                         //randomize the list
                         childrenList.shuffle()
-
                     }
                     //if there are no filters, show a few random posts
                     if(searchIsEmpty == false){
-
+                        var newList = ArrayList<Commission>()
                         //first filter for username
                         //TODO: add rating filter in here too because it uses the user database ref
                         if(filters?.username != ""){
-                            var listSize = childrenList.size
                             //for each commission
-                            for(i in 0..listSize - 1){
+                            var listSize = childrenList.size - 1
+                            for(i in 0..listSize){
                                 var searchedUid = childrenList[i].uid
                                 //get all user data
                                 val usersDatabase = FirebaseDatabase.getInstance().getReference("/users/$searchedUid")
@@ -109,10 +113,14 @@ class SearchFragment : Fragment() {
                                             val childUsername = snapshot.child("username").value.toString()
                                         //check if username matches filter
                                             if(childUsername == filters?.username){
+                                                Log.d("SearchLog","$i")
+                                                Log.d("SearchLog", "size : ${childrenList.size}")
+                                                //val r = childrenList[i]
                                             }else{
+                                                Log.d("SearchLog","$i")
+                                                Log.d("SearchLog", "size : ${childrenList.size}")
                                                 //remove irrelevant results from list
-                                                childrenList.removeAt(i)
-                                                listSize -=1
+
                                             }
 
                                     }
@@ -122,8 +130,10 @@ class SearchFragment : Fragment() {
                                 }
                                 usersDatabase.addListenerForSingleValueEvent(userListener)
                             }
+                            //childrenList = newList
+
                         }
-                        var newList = ArrayList<Commission>()
+
                         //filter by title
                         if(filters?.title != ""){
                             var listSize = childrenList.size - 1
@@ -194,10 +204,13 @@ class SearchFragment : Fragment() {
                                 childrenList[i]))
                         }
                         recyclerView.adapter = ViewAdapter(data)
+                        if(data.size == 0){
+                            noResultsText.text = "No matching results"
+                        }
 
                     //for no filters
                     }else{
-                        for(i in 0..2){
+                        for(i in 0..childrenList.size - 1){
                             val comm = childrenList[i]
                             //make sure commissions are not from the current user's profile
                             if(comm?.uid != uid){

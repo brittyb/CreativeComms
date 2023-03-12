@@ -9,5 +9,5 @@ var artistUID : String? = "",
 var price : Double? = 0.0,
 var pending: Boolean? = true,
 var completed : Boolean? = false,
-var paid : Boolean? = false){
+var paid : Boolean? = false) : java.io.Serializable{
 }
