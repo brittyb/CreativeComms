@@ -49,59 +49,59 @@ class NotificationsFragment : Fragment() {
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
-        recyclerView = view.findViewById<RecyclerView>(R.id.my_recycler_view)
+        recyclerView = view.findViewById(R.id.my_recycler_view)
         // this creates a vertical layout Manager
         recyclerView.layoutManager = LinearLayoutManager(this.activity)
         val requestsDatabase = FirebaseDatabase.getInstance().getReference("/ArtistRequests/$uid")
         val reqListener = object : ValueEventListener {
             override fun onDataChange(dataSnapshot: DataSnapshot) {
-                // Get Number of Commissions from firebase
+                // clear data to avoid duplicate items
                 data.clear()
                 if(dataSnapshot.exists()){
                     for(userSnapshot in dataSnapshot.children){
                         val req = userSnapshot.getValue(Request::class.java)
-                        val commID = req?.commID
-                        val requesterID = req?.requesterUID
-                        var commTitle = ""
-                        var reqUsername = ""
+                        if(req?.pending == true){
+                            val commID = req?.commID
+                            val requesterID = req?.requesterUID
+                            var commTitle = ""
+                            var reqUsername = ""
 
 
-                        val commDatabase = FirebaseDatabase.getInstance().getReference("/Commissions/$uid")
-                        val commListener = object : ValueEventListener{
-                            override fun onDataChange(snapshot: DataSnapshot){
-                                for(commission in snapshot.children){
-                                    val comm = commission.getValue(Commission::class.java)
-                                    if(comm?.commID == commID){
-                                        commTitle = comm?.title.toString()
-                                    }
-                                }
-                                val userDatabase = FirebaseDatabase.getInstance().getReference("/users")
-                                val userListener = object : ValueEventListener{
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        for(user in snapshot.children){
-                                            val userData = user.getValue(User::class.java)
-                                            if(userData?.uid ==requesterID){
-                                                reqUsername = userData?.username.toString()
-                                                data.add(RequestsViewModel(commTitle, req!!, reqUsername))
-                                            }
-
+                            val commDatabase = FirebaseDatabase.getInstance().getReference("/Commissions/$uid")
+                            val commListener = object : ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    for(commission in snapshot.children){
+                                        val comm = commission.getValue(Commission::class.java)
+                                        if(comm?.commID == commID){
+                                            commTitle = comm?.title.toString()
                                         }
-                                        recyclerView.adapter = RequestsAdapter(data)
                                     }
-                                    override fun onCancelled(databaseError: DatabaseError) {
-                                        // handle error
+                                    val userDatabase = FirebaseDatabase.getInstance().getReference("/users")
+                                    val userListener = object : ValueEventListener{
+                                        override fun onDataChange(snapshot: DataSnapshot) {
+                                            for(user in snapshot.children){
+                                                val userData = user.getValue(User::class.java)
+                                                if(userData?.uid ==requesterID){
+                                                    reqUsername = userData?.username.toString()
+                                                    data.add(RequestsViewModel(commTitle, req!!, reqUsername))
+                                                }
+
+                                            }
+                                            recyclerView.adapter = RequestsAdapter(data)
+                                        }
+                                        override fun onCancelled(databaseError: DatabaseError) {
+                                            // handle error
+                                        }
                                     }
+                                    userDatabase.addListenerForSingleValueEvent(userListener)
+
                                 }
-                                userDatabase.addListenerForSingleValueEvent(userListener)
-
+                                override fun onCancelled(databaseError: DatabaseError) {
+                                    // handle error
+                                }
                             }
-                            override fun onCancelled(databaseError: DatabaseError) {
-                                // handle error
-                            }
+                            commDatabase.addListenerForSingleValueEvent(commListener)
                         }
-                        commDatabase.addListenerForSingleValueEvent(commListener)
-
-
 
                     }
 

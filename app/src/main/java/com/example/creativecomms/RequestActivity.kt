@@ -116,6 +116,7 @@ class RequestActivity : AppCompatActivity() {
 
                 ref = ref.push()
                 val reqID = ref.key.toString()
+                request.reqID = reqID
                 ref.setValue(request)
                 var refArtist = FirebaseDatabase.getInstance().getReference("/ArtistRequests/$commUID/$reqID")
                 refArtist.setValue(request)

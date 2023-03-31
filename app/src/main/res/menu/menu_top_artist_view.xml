@@ -16,5 +16,10 @@
         android:enabled="true"
         android:icon="@drawable/pending"
         android:title="Pending"/>
+    <item
+        android:id="@+id/page_4"
+        android:enabled="true"
+        android:icon="@drawable/check_icon"
+        android:title="Pending"/>
 
 </menu>

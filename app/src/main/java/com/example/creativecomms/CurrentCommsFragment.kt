@@ -5,6 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -20,6 +27,9 @@ class CurrentCommsFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private var data = mutableListOf<PendingViewModel>()
+    private val uid = FirebaseAuth.getInstance().uid ?: ""
+    private lateinit var recyclerView : RecyclerView
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +45,70 @@ class CurrentCommsFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_current_comms, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        recyclerView = view.findViewById(R.id.my_recycler_view)
+        // this creates a vertical layout Manager
+        recyclerView.layoutManager = LinearLayoutManager(this.activity)
+
+        val requestsDatabase = FirebaseDatabase.getInstance().getReference("/ArtistRequests/$uid")
+        val reqListener = object : ValueEventListener {
+            override fun onDataChange(dataSnapshot: DataSnapshot) {
+                data.clear()
+                if(dataSnapshot.exists()) {
+                    for (userSnapshot in dataSnapshot.children) {
+                        val req = userSnapshot.getValue(Request::class.java)
+                        val commID = req?.commID
+                        val requesterID = req?.requesterUID
+                        var commTitle = ""
+                        var status = ""
+
+                        if(req?.pending == false) {
+                            val commDatabase = FirebaseDatabase.getInstance().getReference("/Commissions/$uid")
+                            val commListener = object : ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    for (commission in snapshot.children) {
+                                        val comm = commission.getValue(Commission::class.java)
+                                        if (comm?.commID == commID) {
+                                            commTitle = comm?.title.toString()
+                                            if(req?.paid == true) {
+                                                if(req?.completed == false) {
+                                                    status =getString(R.string.paid_not_completed_comm)
+                                                }else{
+                                                    status=getString(R.string.paid_and_completed_comm)
+                                                }
+                                            }else{
+                                                if(req?.completed == false) {
+                                                    //status=getString(R.string.not_completed_or_paid_com)
+                                                    status = "Status"
+                                                }else{
+                                                    status=getString(R.string.completed_not_paid_com)
+                                                }
+                                            }
+                                            data.add(PendingViewModel(commTitle, req!!, status))
+                                        }
+                                    }
+                                    recyclerView.adapter = CurrentCommsAdapter(data)
+
+                                }
+
+                                override fun onCancelled(databaseError: DatabaseError) {
+                                    // handle error
+                                }
+                            }
+                            commDatabase.addListenerForSingleValueEvent(commListener)
+                        }
+
+                    }
+                }
+            }
+
+            override fun onCancelled(databaseError: DatabaseError) {
+                // handle error
+            }
+        }
+        requestsDatabase.addListenerForSingleValueEvent(reqListener)
     }
 
     companion object {

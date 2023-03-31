@@ -1,14 +1,21 @@
 package com.example.creativecomms
+
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
+import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.recyclerview.widget.RecyclerView
+import com.paypal.android.sdk.payments.PayPalPayment
+import com.paypal.android.sdk.payments.PayPalService
+import com.paypal.android.sdk.payments.PaymentActivity
+import java.math.BigDecimal
 
 class PendingAdapter(private val mList: MutableList<PendingViewModel>) : RecyclerView.Adapter<PendingAdapter.ViewHolder>() {
-
+    val PAYPAL_REQUEST_CODE = 123
+    var amount : String = ""
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
@@ -23,8 +30,8 @@ class PendingAdapter(private val mList: MutableList<PendingViewModel>) : Recycle
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val PendingViewModel = mList[position]
-        val payButton = holder.itemView.findViewById<Button>(R.id.acceptButton)
-
+        val payButton = holder.itemView.findViewById<Button>(R.id.uploadButton)
+        amount = PendingViewModel.request.price.toString()
 
         // sets the text to the textview from our itemHolder class
         holder.titleView.text = PendingViewModel.title
@@ -37,7 +44,9 @@ class PendingAdapter(private val mList: MutableList<PendingViewModel>) : Recycle
             holder.itemView.context.startActivity(intent)
         }
         payButton.setOnClickListener() {
-
+            val intent = Intent(holder.itemView.context, PayPalActivity::class.java)
+            intent.putExtra("Price", PendingViewModel.request.price)
+            holder.itemView.context.startActivity(intent)
         }
     }
 
@@ -45,6 +54,8 @@ class PendingAdapter(private val mList: MutableList<PendingViewModel>) : Recycle
     override fun getItemCount(): Int {
         return mList.size
     }
+
+
 
 
 

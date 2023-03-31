@@ -10,16 +10,21 @@
     <string name="enter_email_error">Enter an email address and password</string>
 
     //Create Commission Page
-    <string name = "title_error">Enter a title</string>
-    <string name = "description_error">Enter a description</string>
-    <string name = "medium_error">Enter an art medium</string>
-    <string name = "tags_error">Tags must be different from each other</string>
-    <string name = "image_error">Must upload an image</string>
-    <string name = "enter_prices_error">Enter a minimum and maximum price value</string>
-    <string name = "zero_price_error">Prices cannot be zero</string>
-    <string name = "max_lower_error">Maximum price cannot be larger than minimum</string>
-    <string name = "time_error">Enter an estimated completion time</string>
+    <string name="title_error">Enter a title</string>
+    <string name="description_error">Enter a description</string>
+    <string name="medium_error">Enter an art medium</string>
+    <string name="tags_error">Tags must be different from each other</string>
+    <string name="image_error">Must upload an image</string>
+    <string name="enter_prices_error">Enter a minimum and maximum price value</string>
+    <string name="zero_price_error">Prices cannot be zero</string>
+    <string name="max_lower_error">Maximum price cannot be larger than minimum</string>
+    <string name="time_error">Enter an estimated completion time</string>
 
+    //Commission status strings
+    <string name="paid_not_completed_comm">Commission paid and not completed</string>
+    <string name="paid_and_completed_comm">Commission paid and completed</string>
+    <string name="completed_not_paid_com">Commission completed and not paid</string>
+    <string name="not_completed_or_paid_com">Commission not completed or paid</string>
 
     <string name="selected_item">Selected item:</string>
 
