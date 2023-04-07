@@ -4,7 +4,7 @@
     android:layout_width="match_parent"
     android:layout_height="100dp"
     android:layout_gravity="center"
-    android:layout_margin="5dp"
+    android:layout_margin="10dp"
     app:cardCornerRadius="5dp"
     app:cardElevation="5dp">
 
@@ -12,7 +12,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:orientation="vertical"
-        android:layout_margin="8dp">
+        android:layout_margin="5dp">
 
         <TextView
             android:id="@+id/commTitleText"
@@ -21,30 +21,11 @@
             android:textAlignment="center"
             android:textSize="20sp" />
 
-        <TextView
-            android:id="@+id/requestFromText"
+        <Button
+            android:id="@+id/viewButton"
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" />
-
-        <LinearLayout
-            android:layout_width="match_parent"
-            android:layout_height="match_parent"
-            android:orientation="horizontal">
-
-            <Button
-                android:id="@+id/viewButton"
-                android:layout_width="200dp"
-                android:layout_height="wrap_content"
-                android:text="Accept" />
-
-            <Button
-                android:id="@+id/declineButton"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:text="Decline" />
-
-        </LinearLayout>
+            android:layout_height="wrap_content"
+            android:text="View Commission" />
 
     </LinearLayout>
 </androidx.cardview.widget.CardView>

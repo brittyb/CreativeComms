@@ -5,6 +5,13 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.recyclerview.widget.RecyclerView
+import com.google.firebase.auth.FirebaseAuth
+import com.google.firebase.database.DataSnapshot
+import com.google.firebase.database.DatabaseError
+import com.google.firebase.database.FirebaseDatabase
+import com.google.firebase.database.ValueEventListener
 
 // TODO: Rename parameter arguments, choose names that match
 // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
@@ -20,6 +27,9 @@ class CompletedFragment : Fragment() {
     // TODO: Rename and change types of parameters
     private var param1: String? = null
     private var param2: String? = null
+    private lateinit var recyclerView : RecyclerView
+    private var data = mutableListOf<CompletedComm>()
+    val uid = FirebaseAuth.getInstance().uid ?: ""
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -35,6 +45,28 @@ class CompletedFragment : Fragment() {
     ): View? {
         // Inflate the layout for this fragment
         return inflater.inflate(R.layout.fragment_completed, container, false)
+    }
+
+    override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
+        recyclerView = view.findViewById<RecyclerView>(R.id.my_recycler_view)
+        // this creates a vertical layout Manager
+        recyclerView.layoutManager = LinearLayoutManager(this.activity)
+
+        val completedDatabase = FirebaseDatabase.getInstance().getReference("/Completed/$uid")
+        val completedListener = object : ValueEventListener {
+            override fun onDataChange(snapshot: DataSnapshot) {
+                for(comm in snapshot.children){
+                    val completed = comm.getValue(CompletedComm::class.java)
+                    data.add(completed!!)
+                }
+                recyclerView.adapter = CompletedCommsAdapter(data)
+
+        }
+            override fun onCancelled(databaseError: DatabaseError) {
+                // handle error
+            }
+        }
+        completedDatabase.addListenerForSingleValueEvent(completedListener)
     }
 
     companion object {

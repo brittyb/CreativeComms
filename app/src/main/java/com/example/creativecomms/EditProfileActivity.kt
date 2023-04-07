@@ -128,64 +128,10 @@ class EditProfileActivity : AppCompatActivity() {
 
 
 
-        val usersDatabase = FirebaseDatabase.getInstance().getReference("/users")
-        /*
-        val userListener = object : ValueEventListener {
-            override fun onDataChange(snapshot: DataSnapshot) {
-
-            }
-            override fun onCancelled(databaseError: DatabaseError) {
-                // handle error
-            }
-        }
-*/
-
-
-        /*
-
-
-            changeUserBtn.setOnClickListener {
-                if (passwordText.toString() == currentAccountPass) {
-                    if (newUsernameText?.length!! <= 3) {
-                        errText.text = "Username must contain at least 4 characters"
-                    } else {
-                        newCorrectUser = newUsernameText.toString()
-                        errText.text = "Username changed successfully"
-                    }
-                } else {
-                    errText.text = "Current password is incorrect"
-                }
-            }
-*/
-
-        /*
-                changePassBtn.setOnClickListener {
-                    if (passwordText.toString() == currentAccountPass) {
-                        if (newPasswordText?.contains(" ") == true) {
-                            errText.text = "New password cannot contain spaces"
-                        } else if (newPasswordText?.length!! <= 5) {
-                            errText.text = "New password must contain at least 6 characters"
-                        } else if (newPasswordText.toString() != newPasswordRepeatText.toString()) {
-                            errText.text = "Passwords do not match"
-                        } else {
-                            errText.text = "Password changed successfully"
-                            newCorrectPass = newPasswordText.toString()
-
-                        }
-
-                    } else {
-                        errText.text = "Current password is incorrect"
-                    }
-                }
-*/
         changePfpBtn.setOnClickListener {
             Log.d("ProfilePictureActivity", "Pfp button clicked")
             val gallery = Intent(Intent.ACTION_PICK, MediaStore.Images.Media.INTERNAL_CONTENT_URI)
             startActivityForResult(gallery, pickImage)
-        }
-
-        saveChangesBtn.setOnClickListener {
-
         }
 
         }
@@ -211,7 +157,7 @@ class EditProfileActivity : AppCompatActivity() {
             .addOnSuccessListener {
                 Log.d("EditProfileActivity", "Successfully uploaded pfp image: ${it.metadata?.path}")
                 ref.downloadUrl.addOnSuccessListener {
-                    Log.d("EditProfileActivity", "${it.toString()}")
+                    Log.d("EditProfileActivity", it.toString())
                     savePictureToFirebase(it.toString())
                 }
             }

@@ -25,7 +25,7 @@ class RequestsAdapter(private val mList: MutableList<RequestsViewModel>) : Recyc
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val RequestsViewModel = mList[position]
-        val acceptButton = holder.itemView.findViewById<Button>(R.id.uploadButton)
+        val acceptButton = holder.itemView.findViewById<Button>(R.id.viewButton)
         val declineButton = holder.itemView.findViewById<Button>(R.id.declineButton)
         val uid = FirebaseAuth.getInstance().uid ?: ""
 

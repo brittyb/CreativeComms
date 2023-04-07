@@ -74,16 +74,17 @@ class CurrentCommsFragment : Fragment() {
                                             commTitle = comm?.title.toString()
                                             if(req?.paid == true) {
                                                 if(req?.completed == false) {
-                                                    status =getString(R.string.paid_not_completed_comm)
+                                                    status ="Commission paid for but not completed"
                                                 }else{
-                                                    status=getString(R.string.paid_and_completed_comm)
+                                                    val ref = FirebaseDatabase.getInstance().getReference("ArtistRequests/$uid/${req.reqID}")
+                                                    ref.removeValue()
                                                 }
                                             }else{
                                                 if(req?.completed == false) {
                                                     //status=getString(R.string.not_completed_or_paid_com)
-                                                    status = "Status"
+                                                    status = "Commission not completed and not paid"
                                                 }else{
-                                                    status=getString(R.string.completed_not_paid_com)
+                                                    status="Commission completed but not paid for"
                                                 }
                                             }
                                             data.add(PendingViewModel(commTitle, req!!, status))

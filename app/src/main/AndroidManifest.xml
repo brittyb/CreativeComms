@@ -15,6 +15,9 @@
         android:theme="@style/Theme.AppCompat.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".UploadCommActivity"
+            android:exported="false"/>
+        <activity
             android:name=".ViewRequestActivity"
             android:exported="false" />
         <activity
@@ -44,7 +47,9 @@
         <activity
             android:name=".PayPalActivity"
             android:exported="false" />
-
+        <activity
+            android:name=".ViewCompletedActivity"
+            android:exported="false" />
         <activity
             android:name=".MainActivity"
             android:exported="true"

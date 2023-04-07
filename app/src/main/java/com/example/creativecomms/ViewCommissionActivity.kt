@@ -106,7 +106,7 @@ class ViewCommissionActivity : AppCompatActivity() {
                             val newSaves = FirebaseDatabase.getInstance().getReference("Saves/$uid/${commission.commID}")
                             var alreadyAdded = false
                             for(save in dataSnapshot.children){
-                                var saveID = save.value
+                                val saveID = save.value
                                 if(saveID == commission.commID){
                                     alreadyAdded = true
 

@@ -6,12 +6,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.Button
 import android.widget.TextView
-import androidx.core.app.ActivityCompat.startActivityForResult
 import androidx.recyclerview.widget.RecyclerView
-import com.paypal.android.sdk.payments.PayPalPayment
-import com.paypal.android.sdk.payments.PayPalService
-import com.paypal.android.sdk.payments.PaymentActivity
-import java.math.BigDecimal
 
 class PendingAdapter(private val mList: MutableList<PendingViewModel>) : RecyclerView.Adapter<PendingAdapter.ViewHolder>() {
     val PAYPAL_REQUEST_CODE = 123
@@ -30,7 +25,7 @@ class PendingAdapter(private val mList: MutableList<PendingViewModel>) : Recycle
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
         val PendingViewModel = mList[position]
-        val payButton = holder.itemView.findViewById<Button>(R.id.uploadButton)
+        val payButton = holder.itemView.findViewById<Button>(R.id.viewButton)
         amount = PendingViewModel.request.price.toString()
 
         // sets the text to the textview from our itemHolder class

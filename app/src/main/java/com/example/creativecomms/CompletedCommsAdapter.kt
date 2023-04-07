@@ -8,14 +8,14 @@ import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.google.firebase.auth.FirebaseAuth
 
-class CurrentCommsAdapter(private val mList: MutableList<PendingViewModel>) : RecyclerView.Adapter<CurrentCommsAdapter.ViewHolder>() {
+class CompletedCommsAdapter(private val mList: MutableList<CompletedComm>) : RecyclerView.Adapter<CompletedCommsAdapter.ViewHolder>() {
 
     // create new views
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         // inflates the card_view_design view
         // that is used to hold list item
         val view = LayoutInflater.from(parent.context)
-            .inflate(R.layout.current_comm_item, parent, false)
+            .inflate(R.layout.completed_comm_item, parent, false)
 
         return ViewHolder(view)
     }
@@ -23,27 +23,20 @@ class CurrentCommsAdapter(private val mList: MutableList<PendingViewModel>) : Re
     // binds the list items to a view
     override fun onBindViewHolder(holder: ViewHolder, position: Int) {
 
-        val pendingViewModel = mList[position]
-        val uploadButton = holder.itemView.findViewById<Button>(R.id.viewButton)
+        val comm = mList[position]
+        val viewButton = holder.itemView.findViewById<Button>(R.id.viewButton)
         val uid = FirebaseAuth.getInstance().uid ?: ""
 
         // sets the text to the textview from our itemHolder class
-        holder.titleView.text = pendingViewModel.title
-        holder.statusView.text = pendingViewModel.status
+        holder.titleView.text = comm.commTitle
 
 
-       uploadButton.setOnClickListener {
-           val intent = Intent(holder.itemView.context, UploadCommActivity::class.java)
-           intent.putExtra("Request", pendingViewModel.request)
-           intent.putExtra("Title", pendingViewModel.title)
+       viewButton.setOnClickListener {
+           val intent = Intent(holder.itemView.context, ViewCompletedActivity::class.java)
+           intent.putExtra("CompletedComm", comm)
            holder.itemView.context.startActivity(intent)
        }
 
-        holder.titleView.setOnClickListener {
-            val intent = Intent(holder.itemView.context, ViewRequestActivity::class.java)
-            intent.putExtra("Request", pendingViewModel.request)
-            holder.itemView.context.startActivity(intent)
-        }
     }
 
     // return the number of the items in the list
@@ -51,14 +44,10 @@ class CurrentCommsAdapter(private val mList: MutableList<PendingViewModel>) : Re
         return mList.size
     }
 
-    private fun removeItem(position: Int){
-        mList.removeAt(position)
-        notifyDataSetChanged()
-    }
 
     // Holds the views
     class ViewHolder(ItemView: View) : RecyclerView.ViewHolder(ItemView) {
         val titleView : TextView = itemView.findViewById(R.id.commTitleText)
-        val statusView : TextView = itemView.findViewById(R.id.statusText)
+
     }
 }
