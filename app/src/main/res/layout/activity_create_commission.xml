@@ -34,7 +34,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginTop="10dp"
                     android:layout_weight="1"
-                    android:text="Add Commission"
+                    android:text="@string/add_commission1"
                     android:textSize="24sp" />
 
                 <ImageView
@@ -124,7 +124,7 @@
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:ems="10"
-                            android:hint="Add Title"
+                            android:hint="@string/add_title"
                             android:inputType="textPersonName"
                             android:maxLength="30"
                             android:textSize="24sp" />
@@ -138,14 +138,14 @@
                             android:id="@+id/btn_addImage"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
-                            android:text="Add Image" />
+                            android:text="@string/add_image" />
 
                         <EditText
                             android:id="@+id/editDesc"
                             android:layout_width="match_parent"
                             android:layout_height="wrap_content"
                             android:ems="10"
-                            android:hint="Add Description"
+                            android:hint="@string/add_description"
                             android:inputType="textMultiLine"
                             android:maxLength="500"
                             android:maxLines="10" />

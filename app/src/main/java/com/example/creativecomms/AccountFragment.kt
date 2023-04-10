@@ -13,6 +13,10 @@ import android.content.Intent
 import android.util.Log
 import android.widget.Button
 import com.bumptech.glide.Glide
+import com.example.creativecomms.account.CustomAdapter
+import com.example.creativecomms.account.EditProfileActivity
+import com.example.creativecomms.account.MainActivity
+import com.example.creativecomms.account.User
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
@@ -68,7 +72,7 @@ class AccountFragment : Fragment() {
         val rating: RatingBar = view.findViewById(R.id.profileRating)
         val profilePic: CircleImageView = view.findViewById(R.id.profileImage)
         val editButton : Button = view.findViewById(R.id.btn_editProfile)
-        val commButton : Button = view.findViewById(R.id.btn_comm)
+        val commButton : Button = view.findViewById(R.id.btn_message)
         val logoutButton : Button = view.findViewById(R.id.btn_logout)
 
         //If user is not logged in, go to login page

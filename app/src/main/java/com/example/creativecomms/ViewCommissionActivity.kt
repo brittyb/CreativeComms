@@ -1,22 +1,20 @@
 package com.example.creativecomms
 
 import android.content.Intent
-import android.graphics.BitmapFactory
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
-import android.util.Log
 import android.widget.Button
 import android.widget.ImageView
 import android.widget.RatingBar
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.example.creativecomms.account.User
+import com.example.creativecomms.account.ViewAccActivity
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError
 import com.google.firebase.database.FirebaseDatabase
 import com.google.firebase.database.ValueEventListener
-import com.google.firebase.storage.FirebaseStorage
-import com.squareup.picasso.Picasso
 import de.hdodenhof.circleimageview.CircleImageView
 
 class ViewCommissionActivity : AppCompatActivity() {
@@ -129,7 +127,28 @@ class ViewCommissionActivity : AppCompatActivity() {
             //Go to another page
         }
 
+        pfp.setOnClickListener{
+            val commission = intent.getSerializableExtra("Commission") as Commission
+            val database = FirebaseDatabase.getInstance().getReference("/users/${commission.uid}")
 
+            val userReqListener = object : ValueEventListener {
+                override fun onDataChange(dataSnapshot: DataSnapshot) {
+                    if(dataSnapshot!=null){
+                        val userReq = dataSnapshot.getValue(User::class.java)!!
+                        val intentReq = Intent(applicationContext, ViewAccActivity::class.java)
+                        intentReq.putExtra("User", userReq)
+                        startActivity(intentReq)
+                    }
+
+                }
+                override fun onCancelled(databaseError: DatabaseError) {
+                    // handle error
+                }
+            }
+            database.addListenerForSingleValueEvent(userReqListener)
+
+
+        }
 
 
     }

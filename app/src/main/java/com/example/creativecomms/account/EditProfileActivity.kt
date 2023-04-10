@@ -1,9 +1,6 @@
-package com.example.creativecomms
+package com.example.creativecomms.account
 
-import android.app.Activity
 import android.content.Intent
-import android.graphics.BitmapFactory
-import android.graphics.drawable.BitmapDrawable
 import android.net.Uri
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
@@ -11,9 +8,10 @@ import android.provider.MediaStore
 import android.util.Log
 import android.widget.Button
 import android.widget.EditText
-import android.widget.ImageView
 import android.widget.TextView
 import com.bumptech.glide.Glide
+import com.example.creativecomms.HomeActivity
+import com.example.creativecomms.R
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.DataSnapshot
 import com.google.firebase.database.DatabaseError

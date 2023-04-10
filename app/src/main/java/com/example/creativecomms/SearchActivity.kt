@@ -9,7 +9,6 @@ import android.util.Log
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
-import org.w3c.dom.Text
 
 class SearchActivity : AppCompatActivity() {
     private lateinit var searchButton : Button
@@ -17,7 +16,7 @@ class SearchActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_search)
         Log.d("SearchActivityLog", "on search activity")
-        searchButton=findViewById(R.id.searchButton)
+        searchButton=findViewById(R.id.sendButton)
 
         val username : EditText = findViewById(R.id.usernameSearchText)
         val rating = 0.0f
@@ -29,7 +28,7 @@ class SearchActivity : AppCompatActivity() {
         val medium : EditText = findViewById(R.id.mediumSearchText)
         val tag : EditText = findViewById(R.id.tagSearchText)
         val error : TextView = findViewById(R.id.errorMessageText)
-        val days : EditText = findViewById(R.id.daysSearchText)
+        val days : EditText = findViewById(R.id.MessageText)
 
         val userText = username.text
         val titleText = title.text

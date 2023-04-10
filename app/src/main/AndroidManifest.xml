@@ -15,8 +15,13 @@
         android:theme="@style/Theme.AppCompat.NoActionBar"
         tools:targetApi="31">
         <activity
+            android:name=".ViewAccountActivity"
+            android:exported="false"
+            android:label="@string/title_activity_view_account"
+            android:theme="@style/NoActionBar" />
+        <activity
             android:name=".UploadCommActivity"
-            android:exported="false"/>
+            android:exported="false" />
         <activity
             android:name=".ViewRequestActivity"
             android:exported="false" />
@@ -30,16 +35,20 @@
             android:name=".CreateCommission"
             android:exported="false" />
         <activity
-            android:name=".EditProfileActivity"
+            android:name=".account.EditProfileActivity"
             android:exported="false" />
         <activity
             android:name=".EditCommissionActivity"
             android:exported="false" />
         <activity
+            android:name=".chatting.MessageActivity"
+            android:exported="false"
+            android:windowSoftInputMode="adjustPan"/>
+        <activity
             android:name=".ViewCommissionActivity"
             android:exported="false" />
         <activity
-            android:name=".SignupActivity"
+            android:name=".account.SignupActivity"
             android:exported="false" />
         <activity
             android:name=".HomeActivity"
@@ -48,10 +57,13 @@
             android:name=".PayPalActivity"
             android:exported="false" />
         <activity
+            android:name=".account.ViewAccActivity"
+            android:exported="false" />
+        <activity
             android:name=".ViewCompletedActivity"
             android:exported="false" />
         <activity
-            android:name=".MainActivity"
+            android:name=".account.MainActivity"
             android:exported="true"
             android:label="@string/app_name"
             android:theme="@style/Theme.AppCompat.NoActionBar">

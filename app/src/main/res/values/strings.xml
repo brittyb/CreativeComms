@@ -52,4 +52,15 @@
     <string name="upload_file">Upload File</string>
     <string name="upload_completed_commission">Upload Completed Commission</string>
     <string name="enter_notes_or_rules_for_usage">Enter notes or rules for usage</string>
+    <string name="title_activity_view_account">ViewAccountActivity</string>
+    <string name="message">Message</string>
+    <string name="edit_profile">Edit Profile</string>
+    <string name="add_commission">Add Commission</string>
+    <string name="log_out">Log out</string>
+    <string name="type_a_message">Type a message...</string>
+    <string name="send">Send</string>
+    <string name="add_commission1">Add Commission</string>
+    <string name="add_title">Add Title</string>
+    <string name="add_image">Add Image</string>
+    <string name="add_description">Add Description</string>
 </resources>
